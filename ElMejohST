@@ -36,15 +36,13 @@ void mainImage( out vec4 FragColor, vec2 FragCoord ) {
     vec3 Position = vec3(0);
         
     vec3 RayDir = GetRayDir(FragCoord.xy, iResolution.xy, 60.0);
-    float TravelStart = SceneSDF(Position);
-    float TravelEnd = 1000.0;
-        
-    float Traveled = TravelStart;
+    float TravelStart = SceneSDF(Position),
+        Traveled = TravelStart;
     bool bHit = false;
     
     //while (!bHit || Traveled < TravelStart) { //NO <= ! crash
     while (true) {
-    	if (!(bHit || Traveled >= TravelEnd)) {
+    	if (!(bHit || Traveled >= TravelStart)) {
             Position = RayDir * Traveled;
             float Dist = SceneSDF(Position); //magia
             Traveled += Dist;
