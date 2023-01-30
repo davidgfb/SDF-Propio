@@ -1,0 +1,21 @@
+float map(in vec3 pos) { 
+    return pos.y;
+}
+
+vec3 rayCast(vec3 rd, float t, vec3 ro) { //t = parametro
+    return rd * t + ro;
+}
+
+vec3 posCam = vec3(0);
+int fov = 45;
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    for (int ang = fov; ang > -fov; ang++) {
+        for (int ang = -fov; ang < fov; ang++) { //partimos desde esq sup izda
+            float t = map(posCam); //partimos desde p0 = posCam getDistMinAlObj
+            vec3 p1 = rayCast(normalize()); //avanzamos la distancia t en la direccion del rayo           
+        }
+    }
+
+    fragColor = vec4( vec3(0), 1.0 );
+}
