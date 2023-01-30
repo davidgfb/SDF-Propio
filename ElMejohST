@@ -1,5 +1,3 @@
-const float AlmostZero = 1e-3;
-
 //////////////////////////////////////////////////////////////////
 float Cone(vec3 Local, float BaseRadius, float ConeHeight) {
     float Slope = -ConeHeight / BaseRadius,
@@ -40,9 +38,9 @@ bool RayMarch(vec3 RayDir, float TravelStart, float TravelEnd, out vec3 Position
     
     for (int i=0; i<100; ++i) {
     	Position = RayDir * Traveled;
-        float Dist = SceneSDF(Position);
+        float Dist = SceneSDF(Position); //magia
 		Traveled += Dist;
-        bHit = Dist < AlmostZero;
+        bHit = Dist < 1e-3;
         
         if (bHit || Traveled >= TravelEnd) {
             break;
@@ -52,10 +50,10 @@ bool RayMarch(vec3 RayDir, float TravelStart, float TravelEnd, out vec3 Position
     return bHit;
 }
 
-void mainImage( out vec4 FragColor, in vec2 FragCoord ) {
-    vec3 RayDir = GetRayDir(FragCoord.xy, iResolution.xy, 45.0), 
+void mainImage( out vec4 FragColor, vec2 FragCoord ) {
+    vec3 RayDir = GetRayDir(FragCoord.xy, iResolution.xy, 60.0), 
         Position = vec3(0);
-    bool bHit = RayMarch(RayDir, 1.0, 1000.0, Position), 
+    bool bHit = RayMarch(RayDir, 1.0, 1000.0, Position), //magia
         bOutline = fwidth(float(bHit)) > 0.0;
     
     FragColor = vec4(vec3(int(bHit)), 1);
