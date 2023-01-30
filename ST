@@ -2,8 +2,8 @@ float map(vec3 pos) {
     return pos.y;
 }
 
-vec3 rayCast(vec3 rd, float t, vec3 ro) { //t = parametro
-    return rd * t + ro;
+vec3 rayCast(vec3 dRayo, float t, vec3 ro) { //t = parametro
+    return dRayo * t + ro;
 }
 
 vec3 posCam = vec3(0);
