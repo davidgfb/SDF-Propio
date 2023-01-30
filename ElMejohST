@@ -52,8 +52,7 @@ bool RayMarch(vec3 RayDir, float TravelStart, float TravelEnd, out vec3 Position
 
 void mainImage( out vec4 FragColor, vec2 FragCoord ) {
     vec3 Position = vec3(0);
-    bool bHit = RayMarch(GetRayDir(FragCoord.xy, iResolution.xy, 60.0), 1.0, 1000.0, Position), //magia
-        bOutline = fwidth(float(bHit)) > 0.0;
+    bool bHit = RayMarch(GetRayDir(FragCoord.xy, iResolution.xy, 60.0), 1.0, 1000.0, Position); //magia
     
     FragColor = vec4(vec3(int(bHit)), 1);
 }
