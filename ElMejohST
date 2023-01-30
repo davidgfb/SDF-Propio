@@ -33,8 +33,7 @@ vec3 GetRayDir(vec2 FragCoord, vec2 Resolution, float FOV) {
 }
 
 void mainImage( out vec4 FragColor, vec2 FragCoord ) {
-    vec3 p = vec3(0);        
-    vec3 RayDir = GetRayDir(FragCoord.xy, iResolution.xy, 60.0);
+    vec3 p = vec3(0), RayDir = GetRayDir(FragCoord.xy, iResolution.xy, 60.0);
     float tMin = SceneSDF(p),
         t = tMin;
     bool bHit = false;
