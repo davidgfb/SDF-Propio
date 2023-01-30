@@ -3,9 +3,7 @@ from numpy.linalg import norm
 
 fov = 45;
 
-def normalize(x,y,z): #dire):
-    dire = (x,y,z)
-    
+def normalize(dire):     
     return dire / norm(dire)
 
 for angX in range(-fov, fov): 
@@ -15,6 +13,6 @@ for angX in range(-fov, fov):
         #print(angX, angZ)
         
         angZ_Rads = radians(float(angZ)) #, t = map(posCam); //partimos desde p0 = posCam getDistMinAlObj
-        dir_Rayo = normalize(cos(angZ_Rads), sin(angZ_Rads), 0); #vec3 p1 = rayCast(normalize(0, cos(ang), 0)); //avanzamos la distancia t en la direccion del rayo           
+        dir_Rayo = normalize((cos(angZ_Rads), sin(angZ_Rads), 0)); #vec3 p1 = rayCast(normalize(0, cos(ang), 0)); //avanzamos la distancia t en la direccion del rayo           
     
 
