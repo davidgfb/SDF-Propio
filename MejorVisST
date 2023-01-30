@@ -1,0 +1,293 @@
+#define VIG 1
+#define FAR_PLANE 100.
+
+float asp;
+vec4 bufA;
+vec4 bufB;
+vec4 bufC;
+vec4 bufD;
+
+float word_map(vec2 uv, vec2 pos, int ascii, vec2 unit)
+{
+    return get_text(uv, pos, ascii, unit, iChannel3);
+}
+
+float map001(vec2 p)
+{
+	float h;
+    h = line(p, vec2(-asp, -0.8), vec2(-asp*0.8, -0.8));
+    h = min(h, line(p,  vec2(-asp*0.8, -0.8),  vec2(-asp*0.8, 0.2)));
+    h = min(h, line(p,  vec2(-asp*0.8, 0.2),   vec2(-asp*0.5, 0.2)));
+    h = min(h, line(p,  vec2(-asp*0.5, 0.2),   vec2(-asp*0.5, -0.8)));
+    h = min(h, line(p,  vec2(-asp*0.5, -0.8),  vec2(-asp*0.05, -0.8)));
+    h = min(h, line(p,  vec2(-asp*0.05, -0.8), vec2(asp*0.2, -0.4)));
+    h = min(h, line(p,  vec2(asp*0.2, -0.4),   vec2(asp*0.45, -0.8)));
+    h = min(h, line(p,  vec2(asp*0.45, -0.8), vec2(asp, -0.8)));
+    return h;
+}
+
+
+float map002(vec2 p)
+{
+	float h;
+    h = circle(p, vec2(0., -asp*1.7), asp*1.5);
+    h = min(h, box(p, vec2(0., 0.15), vec2(asp*0.3,0.2)));
+    return h;
+}
+
+float map003(vec2 p)
+{
+	float h;
+    h = triangle(p, vec2(0., 0.2), vec2(-0.2, -0.2), vec2(0.2, -0.2));
+    h = min(h, triangle(p-vec2(0.5, 0.4), vec2(0., -0.2), vec2(-0.2, 0.2), vec2(0.2, 0.2)));
+    h = min(h, triangle(p-vec2(-0.5, 0.4), vec2(0., -0.2), vec2(-0.2, 0.2), vec2(0.2, 0.2)));
+    
+    h = min(h, triangle(p-vec2(0.5, -0.4), vec2(0., 0.2), vec2(-0.2, -0.2), vec2(0.2, -0.2)));
+    h = min(h, triangle(p-vec2(-0.5, -0.4), vec2(0., 0.2), vec2(-0.2, -0.2), vec2(0.2, -0.2)));
+    
+    h = min(h, triangle(p-vec2(-1.0, 0.), vec2(0., 0.2), vec2(-0.2, -0.2), vec2(0.2, -0.2)));
+    h = min(h, triangle(p-vec2(1.0, 0.), vec2(0., 0.2), vec2(-0.2, -0.2), vec2(0.2, -0.2)));
+    
+    return h;
+}
+
+// from iq
+float map004(vec2 c)
+{
+    c.x *= -1.;
+    c -= vec2(0.9, -0.8);
+    
+	float h;
+    
+    vec2 z = vec2(0.);
+    vec2 dz = vec2(0.);
+    float m = 0.;
+    
+    for(int i = 0; i < 20;++i)
+    {
+        if(m > 1024.)
+            break;
+        dz = 2.0*vec2(z.x*dz.x-z.y*dz.y, z.x*dz.y + z.y*dz.x) + vec2(1.0,0.0);
+        z = cx_pow2(z) + c;
+        
+        m = dot(z,z);
+    }
+    
+    float d = 0.5*sqrt(m/dot(dz,dz))*log(m);
+
+    return d*0.8;
+}
+
+//------------------------------------
+//- you can change this map function -
+//------------------------------------
+float map(vec2 p)
+{
+    int m = int(GET_MAP_NUM);
+    if(m == 0)
+		return map001(p);
+    else if(m == 1)
+        return map002(p);
+    else if(m == 2)
+        return map003(p);
+    else
+        return map004(p);
+    
+}
+
+vec4 sphere_range(vec4 col, vec2 p, vec2 center, float r)
+{
+	float h;
+    
+    h = circle(p, center , r);
+    col = blend(col, vec4(0.435, 0.8, 0., smoothstep(0.01, 0., abs(h))));
+    
+    return col;
+}
+
+vec4 sphere_point(vec4 col, vec2 p, vec2 center, vec3 inner_col, vec3 outer_col)
+{
+	float h;
+    
+    h = circle(p, center, 0.02);
+    col = blend(col, vec4(inner_col, smoothstep(0.01, 0., h)));
+    
+    h = circle(p, center, 0.02);
+    col = blend(col, vec4(outer_col, smoothstep(0.01, 0., abs(h))));
+    
+    return col;
+}
+
+vec4 sphere_search(vec4 col, vec2 p, vec2 center)
+{
+	float d = map(center)*0.99;
+    
+    float h;
+    
+    col = sphere_range(col, p, center, d);
+    col = sphere_point(col, p, center, vec3(0., 0.8, 1.), vec3(0., 0.435, 1.));
+    
+    return col;
+}
+
+vec4 put_text_point_num(vec4 col, vec2 uv, vec2 pos, float scale, int num)
+{
+	float unit = asp * scale * 0.1;
+    float h = 0.;
+    vec2 sc = vec2(unit, unit);
+    int d = num % 10;
+    int t = num / 10;
+    
+    
+    h = max(h, word_map(uv, pos, 80, sc));
+    
+    if(t > 0)  // Ptd
+    {
+    	h = max(h, word_map(uv, pos+vec2(unit*0.3, -unit*0.1), 48+t, sc*0.6));
+        h = max(h, word_map(uv, pos+vec2(unit*0.5, -unit*0.1), 48+d, sc*0.6));
+    }
+    else  //Pd
+    {
+    	h = max(h, word_map(uv, pos+vec2(unit*0.3, -unit*0.1), 48+d, sc*0.6));
+    }
+    
+    col = blend(col, vec4(0., 0.435, 1., h));
+    
+    return col;
+}
+
+vec4 draw_ray(vec4 col, vec2 p, vec2 a, vec2 b)
+{
+	float h = line(p, a, b);
+    col = blend(col, vec4(0., 0.435, 1., smoothstep(0.01, 0., abs(h))));
+    return col;
+}
+
+vec4 draw_arrow(vec4 col, vec2 p, vec2 a, vec2 b)
+{
+    vec2 l = (a-b);
+    
+    float ang = 3.1415926/6.;
+    
+    vec2 r1 = vec2(cos(ang), sin(ang));
+    vec2 r2 = vec2(cos(-ang), sin(-ang));
+    vec2 p1 = b+l*mat2(r1.x, -r1.y, r1.y, r1.x)*0.2;
+    vec2 p2 = b+l*mat2(r2.x, -r2.y, r2.y, r1.x)*0.2;
+    
+    
+    float h = line(p, a, b);
+    h = min(h, line(p, b, p1));
+    h = min(h, line(p, b, p2));
+    
+    col = blend(col, vec4(0., 0.435, 1., smoothstep(0.01, 0., abs(h))));
+ 	return col;
+}
+
+
+vec4 draw_map(vec4 col, vec2 p)
+{
+    float h = map(p);
+    
+    col = blend(col, vec4(vec3(.7), smoothstep(0.01, 0., h)));
+    col = blend(col, vec4(vec3(.0), smoothstep(0.01, 0., abs(h))));
+    
+	return col;
+}
+
+vec3 render(vec2 p)
+{
+    vec2 p0_center = GET_ORIGIN;
+	vec2 p4_center = GET_TARGET;
+    
+    vec2 pos = p0_center;
+    vec2 dir = normalize(p4_center - p0_center);
+    mat2 text_rt = mat2(0.5, -0.866, 0.866, 0.5);
+    vec2 text_dir = text_rt*dir;
+    
+	vec4 bg = vec4(1.);
+    vec4 canvus1 = vec4(0.);
+    vec4 canvus2 = vec4(0.);
+    vec4 canvus3 = vec4(0.);
+    
+    if(is(GET_DRAW_MAP)){ //draw map
+    	canvus1 = draw_map(canvus1, p);
+    }
+
+    if(is(GET_DRAW_START)){  //draw start
+
+        //second march: draw point
+        pos = p0_center;
+        float len = 0.;
+        canvus2 = sphere_point(canvus2, p, pos, vec3(0., 0.8, 1.), vec3(0., 0.435, 1.));
+        
+        canvus3 = put_text_point_num(canvus3, p, pos+text_dir*0.08, .6, 0);
+
+        for(int i=0;i<int(GET_STEP_COUNT);++i){  //step count
+            len = map(pos);
+            canvus2 = sphere_range(canvus2, p, pos, len);
+            pos += dir * len;
+            canvus3 = sphere_point(canvus3, p, pos, vec3(0., 0.8, 1.), vec3(0., 0.435, 1.));
+            canvus3 = put_text_point_num(canvus3, p, pos+text_dir*0.08, .6, i+1);
+            if(len > FAR_PLANE)
+                break;
+        }
+        
+        
+        if(int(GET_STEP_COUNT) == 0){  //step count
+        	canvus1 = draw_arrow(canvus1, p, p0_center, p0_center+dir*0.2);
+        }
+        else
+        {
+        	canvus1 = draw_ray(canvus1, p, p0_center, pos);
+        }
+    }
+    
+    
+    if(is(GET_SHOW_TAR)){  //show target position
+    	canvus3 = sphere_point(canvus3, p, p4_center, vec3(1., 0.64, 0.85), vec3(1., 0., 0.));
+    }
+    
+    bg = mix(bg, canvus1, canvus1.a);
+    bg = mix(bg, canvus2, canvus2.a);
+    bg = mix(bg, canvus3, canvus3.a);
+    
+    
+    return bg.rgb;
+}
+
+void initBuffer()
+{
+	bufA = texture(iChannel1, vec2(0.0, 0.0));
+    bufB = texture(iChannel1, vec2(1.0, 0.0));
+    bufC = texture(iChannel1, vec2(0.0, 1.0));
+    bufD = texture(iChannel1, vec2(1.0, 1.0));
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+    
+    initBuffer();
+    
+    asp = iResolution.x/iResolution.y;
+    
+    vec2 uv =( -iResolution.xy + 2.*fragCoord.xy )/ iResolution.y;
+    
+    vec3 col = vec3(0.);
+    
+    col = render(uv);
+    
+    vec4 gui = texture(iChannel0, fragCoord.xy / iResolution.xy);
+    
+    col = mix(col, gui.rgb, gui.a);
+    
+    //iq's vingette from:
+    //https://www.shadertoy.com/view/XdKyRR
+#if VIG
+    vec2 q = fragCoord.xy / iResolution.xy;
+    col *= pow( 16.0*q.x*q.y*(1.0-q.x)*(1.0-q.y), 0.2 );       
+    col *= 0.9 + 0.1*texture(iChannel2, fragCoord.xy/256.).x;
+#endif
+    col = pow(col, vec3(0.4545));
+    
+    fragColor = vec4(col, 1.);
+}
