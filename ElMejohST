@@ -36,7 +36,7 @@ bool RayMarch(vec3 RayDir, float TravelStart, float TravelEnd, out vec3 Position
     float Traveled = TravelStart;
     bool bHit = false;
     
-    for (int i=0; i<100; ++i) {
+    for (int i = 0; i < 50; ++i) {
     	Position = RayDir * Traveled;
         float Dist = SceneSDF(Position); //magia
 		Traveled += Dist;
@@ -52,7 +52,8 @@ bool RayMarch(vec3 RayDir, float TravelStart, float TravelEnd, out vec3 Position
 
 void mainImage( out vec4 FragColor, vec2 FragCoord ) {
     vec3 Position = vec3(0);
-    bool bHit = RayMarch(GetRayDir(FragCoord.xy, iResolution.xy, 60.0), 1.0, 1000.0, Position); //magia
+    bool bHit = RayMarch(GetRayDir(FragCoord.xy, iResolution.xy, 60.0), SceneSDF(Position), 
+        1000.0, Position); //magia: TravelStart = punto mas cercano para cada rayo
     
     FragColor = vec4(vec3(int(bHit)), 1);
 }
