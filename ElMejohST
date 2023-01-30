@@ -37,21 +37,13 @@ void mainImage( out vec4 FragColor, vec2 FragCoord ) {
     vec3 RayDir = GetRayDir(FragCoord.xy, iResolution.xy, 60.0);
     float tMin = SceneSDF(p),
         t = tMin;
-    bool bHit = false,
-        esta_Abierto = true;
-        
-    if (tMin > 1e-3) {  
-        while (!bHit && t <= tMin) {
-            p += RayDir * t;
-
-            t = SceneSDF(p); 
-
-            if (t < tMin) {
-                tMin = t;
-            }
-
-            bHit = t < 1e-3;
-        } //magia: TravelStart = punto mas cercano para cada rayo
+    bool bHit = false;
+           
+    while (!bHit && t <= tMin) {
+        p += RayDir * t;
+        t = SceneSDF(p); 
+        bHit = t < 1e-3; 
     }  
+    
     FragColor = vec4(vec3(int(bHit)), 1);
 }
