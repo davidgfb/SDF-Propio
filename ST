@@ -2,8 +2,8 @@ float map(vec3 pos) {
     return pos.y;
 }
 
-vec3 rayCast(vec3 dRayo, float t, vec3 oRayo) { //t = parametro
-    return dRayo * t + oRayo;
+vec3 rayCast(vec3 dir_Rayo, float t, vec3 oRayo) { //t = parametro
+    return dir_Rayo * t + oRayo;
 }
 
 vec3 posCam = vec3(0);
@@ -15,7 +15,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
             if (angZ < 0) angZ += 180; //4º --> 1er cuad
             
             float angZ_Rads = radians(float(angZ)), t = map(posCam); //partimos desde p0 = posCam getDistMinAlObj
-            vec3 dRayo = normalize(vec3(cos(angZ_Rads), sin(angZ_Rads), 0)); //vec3 p1 = rayCast(normalize(0, cos(ang), 0)); //avanzamos la distancia t en la direccion del rayo           
+            vec3 dir_Rayo = normalize(vec3(cos(angZ_Rads), sin(angZ_Rads), 0)); //vec3 p1 = rayCast(normalize(0, cos(ang), 0)); //avanzamos la distancia t en la direccion del rayo           
         }
     }
 
