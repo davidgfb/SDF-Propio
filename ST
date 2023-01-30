@@ -11,6 +11,8 @@ int fov = 45;
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     for (int beta = fov; beta > -fov; beta--) {
+        if (beta < 0) beta += 180;
+    
         for (int alfa = -fov; alfa < fov; alfa++) { //partimos desde esq sup izda
             if (alfa < 0) alfa += 180; //4º --> 1er cuad
             
