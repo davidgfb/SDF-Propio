@@ -42,14 +42,13 @@ void mainImage( out vec4 FragColor, vec2 FragCoord ) {
     float Traveled = TravelStart;
     bool bHit = false;
     
-    while (!bHit || Traveled < TravelStart) { //NO <= ! crash
-    	Position = RayDir * Traveled;
-        float Dist = SceneSDF(Position); //magia
-		Traveled += Dist;
-        bHit = Dist < 1e-3;
-        
-        if (bHit || Traveled >= TravelEnd) {
-            break;
+    //while (!bHit || Traveled < TravelStart) { //NO <= ! crash
+    while (true) {
+    	if (!(bHit || Traveled >= TravelEnd)) {
+            Position = RayDir * Traveled;
+            float Dist = SceneSDF(Position); //magia
+            Traveled += Dist;
+            bHit = Dist < 1e-3;           
         }
     } //magia: TravelStart = punto mas cercano para cada rayo
       
