@@ -32,7 +32,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         color = vec3(0);    
     float tMin = map(ro),
         t = tMin;
-    bool hasHit = false;
+    bool hasHit = t < 1e-3;
     
     rd.x /= iResolution.y;
     rd.x *= iResolution.x;
