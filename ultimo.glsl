@@ -22,18 +22,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     relacion de aspecto
     TODO: origen en esq sup izda
     */
-    vec3 ro = vec3(0, 0, -1),
+    vec3 ro = vec3(0, -1, 0),
         rd = normalize(vec3(vec2(iResolution.x / 
         iResolution.y, 1) * (2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1.0)),
         color = vec3(0);
+    rd = rd.xzy;
     float tMin = map(ro),
         t = tMin;
     bool bHit = false;
             
     while (!bHit && t <= tMin) {
         ro += rd * t;
-        t = map(ro);
+        t = map(ro); 
         bHit = t < 1e-3; 
     }
     
