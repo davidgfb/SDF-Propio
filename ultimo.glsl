@@ -52,8 +52,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         t = t1;
         esCero = getEsCero(t1);
         
-        if (t1 < tMin) { //NO tMin = t sin t = t1!
-            tMin = t1;
+        if (t1 < tMin) { //condicion fdtal 
+            tMin = t1; //NO sin t = t1!
         }
     }
     
