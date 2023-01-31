@@ -20,6 +20,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     = (1, 1) 
     iResolution.x / iResolution.y corrige la 
     relacion de aspecto
+    normalize coordenadas: euclideas --> polares    
+    rd = rd.xzy transforma xyz en xzy (el frente 
+    esta en (0, 1, 0))
     TODO: origen en esq sup izda
     */
     vec3 ro = vec3(0, -1, 0),
@@ -31,7 +34,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         t = tMin;
     bool bHit = false;
          
-    rd = rd.xzy;
+    rd = rd.xzy; 
          
     while (!bHit && t <= tMin) {
         ro += rd * t;
