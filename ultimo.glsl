@@ -44,7 +44,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
                  
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
-    while (!esCero && t < tMin) { 
+    while (!esCero && t < tMin) { //este algoritmo NO mola
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);                
