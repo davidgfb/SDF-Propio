@@ -42,7 +42,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     while (!hasHit && t <= tMin) { //'=' para el 1er paso
         ro += rd * t;
         t = map(ro); 
-        hasHit = t < 1e-3; //tMin = t;?
+        hasHit = t < 1e-3; //tMin = t;? Tal vez cada hilo tiene este programa y haya q definir tMin como global?
     }
     
     fragColor = vec4(vec3(int(hasHit)), 1);    
