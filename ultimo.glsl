@@ -40,9 +40,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         tMin = t;
     bool esCero = getEsCero(t);
     
-    rd.x /= iResolution.y;
-    rd.x *= iResolution.x;
-             
+    rd.x *= iResolution.x / iResolution.y;
+                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
     while (!esCero && t <= tMin) { //'=' para el 1er paso
@@ -61,6 +60,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     fragColor = vec4(vec3(int(esCero)), 1);    
 }
 
-/*rd.x = rd.x / iResolution.y * iResolution.x;
-rd.x /= iResolution.y * iResolution.x; //solo evalua la 1a parte (rd.x /= iResolution.y)
+/*rd.x /= 1.0 / iResolution.x * iResolution.y; 
+rd.x /= iResolution.y;
+rd.x *= iResolution.x;
 */
