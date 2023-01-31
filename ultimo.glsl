@@ -1,5 +1,5 @@
 float map(vec3 p) {
-    return min(length(p) - 0.5);
+    return min(length(p) - 0.5, p.z + 1.0);
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
