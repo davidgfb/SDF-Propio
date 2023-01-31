@@ -37,23 +37,18 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         fragCoord - vec2(1)), 1)), //z = 1
         color = vec3(0);    
     float t = map(ro),
-        tMin = t;
+        tMin = 2.0 * t; //fuerza la entrada a la cond
     bool esCero = getEsCero(t);
     
     rd.x *= iResolution.x / iResolution.y;
                  
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
-    while (!esCero && t <= tMin) { //'=' para el 1er paso
-        ro += rd * t;
-        
-        t = map(ro); 
-        
-        esCero = getEsCero(t);
-        
-        if (t < tMin) { //condicion fdtal 
-            tMin = t; 
-        }
+    while (!esCero && t < tMin) { 
+        ro += rd * t;        
+        t = map(ro);         
+        esCero = getEsCero(t);                
+        tMin = t;         
     }
     
     fragColor = vec4(vec3(int(esCero)), 1);    
