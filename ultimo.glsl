@@ -24,14 +24,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     rd = rd.xzy transforma xyz en xzy
     TODO: origen en esq sup izda
     */
-    vec3 frente = vec3(0, 1, 0); //coordenada y
-    vec3 ro = -frente,
+    vec3 frente = vec3(0, 1, 0), //coordenada y
+        ro = -frente,
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1
         color = vec3(0);    
     float tMin = map(ro),
         t = tMin;
-    bool bHit = false;
+    bool hasHit = false;
     
     rd.x /= iResolution.y;
     rd.x *= iResolution.x;
@@ -39,11 +39,11 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     //rd.x /= iResolution.y * iResolution.x;         
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
-    while (!bHit && t <= tMin) {
+    while (!hasHit && t <= tMin) { //'=' para el 1er paso
         ro += rd * t;
         t = map(ro); 
-        bHit = t < 1e-3; 
+        hasHit = t < 1e-3; 
     }
     
-    fragColor = vec4(vec3(int(bHit)), 1);    
+    fragColor = vec4(vec3(int(hasHit)), 1);    
 }
