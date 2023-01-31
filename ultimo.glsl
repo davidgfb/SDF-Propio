@@ -26,12 +26,13 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         rd = normalize(vec3(vec2(iResolution.x / 
         iResolution.y, 1) * (2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1.0)),
-        color = vec3(0);
-    rd = rd.xzy;
+        color = vec3(0);    
     float tMin = map(ro),
         t = tMin;
     bool bHit = false;
-            
+         
+    rd = rd.xzy;
+         
     while (!bHit && t <= tMin) {
         ro += rd * t;
         t = map(ro); 
