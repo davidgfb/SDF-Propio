@@ -17,6 +17,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     = (-1, -1) 
     (1, 1): 2 * (1, 1) - (1, 1) = (2, 2) - (1, 1) =
     = (1, 1) 
+    TODO: origen en esq sup izda
     */
     vec2 uv = fragCoord / iResolution.xy; 
     vec3 ro = vec3(0, 0, 1),
