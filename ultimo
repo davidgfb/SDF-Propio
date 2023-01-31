@@ -3,19 +3,18 @@ float map(vec3 p) {
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-    vec3 p = vec3(0, 0, 0);
-    float tMin = map(p),
-        t = tMin;
-    bool bHit = false;
     vec2 uv = fragCoord / iResolution.xy;
     vec3 ro = vec3(0,1,4),
         rd = normalize(vec3((2.0 * uv - 1.0) * 
         vec2(iResolution.y / iResolution.x), -1.0)),
         color = vec3(0);
-    
+    float tMin = map(ro),
+        t = tMin;
+    bool bHit = false;
+            
     while (!bHit && t <= tMin) {
-        p += rd * t;
-        t = map(p);
+        ro += rd * t;
+        t = map(ro);
         bHit = t < 1e-3; 
     }
     
