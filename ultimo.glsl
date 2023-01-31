@@ -35,7 +35,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     
     rd.x /= iResolution.y;
     rd.x *= iResolution.x;
-    //rd.x = rd.x / iResolution.y * iResolution.x; //rd.x /= iResolution.y * iResolution.x;         
+    //rd.x = rd.x / iResolution.y * iResolution.x; 
+    //rd.x /= iResolution.y * iResolution.x;         
     rd = rd.xzy; 
          
     while (!bHit && t <= tMin) {
