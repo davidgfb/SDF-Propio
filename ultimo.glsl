@@ -5,7 +5,7 @@ float map(vec3 p) {
 }
 
 bool getEsCero(float t) {
-    return t < 0.1;
+    return t < 1e-3;
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
