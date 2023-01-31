@@ -4,7 +4,8 @@ float map(vec3 p) {
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     /*OBJ: fragCoord / iResolution.xy (uv) normaliza 
-    la pos del pixel en pantalla entre [0, 1]
+    la pos del pixel en pantalla entre [0, 1] en 
+    euclideas NO en polares!
     El origen esta en la esq inf izda!
     fragCoord = pos pixel en pantalla
     iResolution = resolucion pantalla
