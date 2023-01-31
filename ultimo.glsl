@@ -17,8 +17,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     rd normaliza uv entre [-1, 1]
     ej: (0, 0): 2 * (0, 0) - (1, 1) = 
     (0, 0) - (1, 1) = (-1, -1) 
-    (1, 1): 2 * (1, 1) - (1, 1) = (2, 2) - (1, 1) =
-    = (1, 1) 
+    (1, 1): 2 * (1, 1) - (1, 1) = 
+    (2, 2) - (1, 1) = (1, 1) 
     iResolution.x / iResolution.y corrige la 
     relacion de aspecto
     normalize coordenadas: euclideas --> polares    
