@@ -2,6 +2,10 @@ float map(vec3 p) {
     return min(length(p) - 0.5, p.z + 1.0);
 }
 
+bool getEsCero(float t) {
+    return t < 0.1;
+}
+
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     /*OBJ: fragCoord / iResolution.xy (uv) normaliza 
     la pos del pixel en pantalla entre [0, 1] en 
@@ -30,22 +34,23 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1
         color = vec3(0);    
-    float tMin = map(ro),
-        t = tMin;
-    bool hasHit = t < 1e-3;
+    float t = map(ro),
+        tMin = t;
+    bool esCero = getEsCero(t);
     
     rd.x /= iResolution.y;
     rd.x *= iResolution.x;
              
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
-    while (!hasHit && t <= tMin) { //'=' para el 1er paso
+    while (!esCero && t <= tMin) { //'=' para el 1er paso
         ro += rd * t;
         t = map(ro); 
-        hasHit = t < 1e-3; //tMin = t;? Tal vez cada hilo tiene este programa y haya q definir tMin como global?
+        esCero = getEsCero(t);
+        //tMin = t;?
     }
     
-    fragColor = vec4(vec3(int(hasHit)), 1);    
+    fragColor = vec4(vec3(int(esCero)), 1);    
 }
 
 /*rd.x = rd.x / iResolution.y * iResolution.x;
