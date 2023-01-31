@@ -47,7 +47,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
          
     while (!esCero && t <= tMin) { //'=' para el 1er paso
         ro += rd * t;
+        
         float t1 = map(ro); 
+        
         t = t1;
         esCero = getEsCero(t1);
         
