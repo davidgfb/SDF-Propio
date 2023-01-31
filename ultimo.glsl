@@ -47,13 +47,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     while (!esCero && t <= tMin) { //'=' para el 1er paso
         ro += rd * t;
         
-        float t1 = map(ro); 
+        t = map(ro); 
         
-        t = t1;
-        esCero = getEsCero(t1);
+        esCero = getEsCero(t);
         
-        if (t1 < tMin) { //condicion fdtal 
-            tMin = t1; //NO sin t = t1!
+        if (t < tMin) { //condicion fdtal 
+            tMin = t; 
         }
     }
     
