@@ -27,7 +27,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec3 frente = vec3(0, 1, 0); //coordenada y
     vec3 ro = -frente,
         rd = normalize(vec3((2.0 / iResolution.xy * 
-        fragCoord - vec2(1)), 1.0)),
+        fragCoord - vec2(1)), 1)), //z = 1
         color = vec3(0);    
     float tMin = map(ro),
         t = tMin;
@@ -35,9 +35,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     
     rd.x /= iResolution.y;
     rd.x *= iResolution.x;
-    //rd.x = rd.x / iResolution.y * iResolution.x; 
+    //rd.x = rd.x / iResolution.y * iResolution.x;
     //rd.x /= iResolution.y * iResolution.x;         
-    rd = rd.xzy; 
+    rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
     while (!bHit && t <= tMin) {
         ro += rd * t;
