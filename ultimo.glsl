@@ -1,5 +1,7 @@
 float map(vec3 p) {
-    return min(length(p) - 0.5, p.z + 1.0);
+    return length(p) - 0.5;
+    //return min(length(p) - 0.5, p.z + 1.0);
+    //return p.z + 1.0;
 }
 
 bool getEsCero(float t) {
@@ -47,12 +49,15 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         ro += rd * t;
         t = map(ro); 
         esCero = getEsCero(t);
-        //tMin = t;?
+        
+        if (t < tMin) {
+            tMin = t;
+        }
     }
     
     fragColor = vec4(vec3(int(esCero)), 1);    
 }
 
 /*rd.x = rd.x / iResolution.y * iResolution.x;
-rd.x /= iResolution.y * iResolution.x;
+rd.x /= iResolution.y * iResolution.x; //solo evalua la 1a parte (rd.x /= iResolution.y)
 */
