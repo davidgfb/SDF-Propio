@@ -43,7 +43,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
                  
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
-    for (int i = 0; i < 100; i++) { //while (!esCero && t < tMin) { //este algoritmo NO mola
+    for (int i = 0; i < 100; i++) {
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);                       
