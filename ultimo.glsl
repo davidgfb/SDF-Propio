@@ -18,16 +18,23 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
-vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool usaCond) {
     bool esCero = cond;
 
     for (int i = 0; cond && i < nPasos; i++) { 
         ro += rd * t;        
-        t = map(ro);         
-        esCero = getEsCero(t);
+        t = map(ro);   
+        
+        if (usaCond) {
+            esCero = getEsCero(t);
+        }
     }
     
     return vec4(ro, t);
+}
+
+vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+    return rayMarch(cond, nPasos, ro, rd, t, false);
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
@@ -50,7 +57,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         esCero = getEsCero(t);
     }
     
-    /*vec4 vRayMarch = rayMarch(!esCero, nPasos_Luz, ro, rd, t);
+    /*vec4 vRayMarch = rayMarch(!esCero, nPasos_Luz, ro, rd, t, true);
     ro = vRayMarch.xyz;
     t = vRayMarch.a;*/ 
     
