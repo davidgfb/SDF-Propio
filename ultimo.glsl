@@ -1,8 +1,8 @@
-float h = 1e-3;
+float h = 1e-3, r = 0.5;
 vec3 y = vec3(0, 1, 0);
 
 float map(vec3 p) {
-    return min(length(p) - 0.5, p.z + 1.0);
+    return min(length(p) - r, p.z + r);
 }
 
 bool getEsCero(float t) {
@@ -16,7 +16,7 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
-vec3 rayCast(bool esCero, vec3 ro, vec3 rd, float t) {
+/*vec3 rayCast(bool esCero, vec3 ro, vec3 rd, float t) {
     for (int i = 0; !esCero && i < 1000; i++) { 
         ro += rd * t;        
         t = map(ro);         
@@ -24,14 +24,14 @@ vec3 rayCast(bool esCero, vec3 ro, vec3 rd, float t) {
     }
     
     return ro;
-}
+}*/
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec3 ro = -y,
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1      
         color = vec3(0),
-        posLuz = 10.0 * vec3(1);
+        posLuz = vec3(10); //pto luz 
     float t = map(ro); 
     bool esCero = getEsCero(t);
     
@@ -52,20 +52,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     //rayCast(); 
     if (esCero) { //sombras 
         esCero = false;
-        rd = normalize(posLuz - ro);
-   
-        /*for (int i = 0; t > 1e-5 && i < 1000; i++) { 
+        rd = vec3(1,1,1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
+        color = getNormal(ro); //no hay contacto (i = 1000)
+        
+        for (int i = 0; t > 1e-4 && i < 1000; i++) { 
             ro += rd * t;        
-            t = map(ro);         
-            esCero = getEsCero(t);
-        }*/
-   
-        if (esCero) {
-            color = vec3(0);
-        } else {
-            color = getNormal(ro);
+            t = map(ro);                     
         }
-    } else {
+   
+        if (t <= 1e-4) {
+            color -= vec3(0.1);
+            //color = vec3(0);
+        } 
+    } else { //no hay contacto (i = 1000)
         color = getNormal(ro);
     }
          
