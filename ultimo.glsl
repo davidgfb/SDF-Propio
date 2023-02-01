@@ -1,3 +1,6 @@
+float h = 1e-3;
+vec3 y = vec3(0, 1, 0);
+
 float map(vec3 p) {
     //return length(p) - 0.5;
     return min(length(p) - 0.5, p.z + 1.0);
@@ -5,7 +8,14 @@ float map(vec3 p) {
 }
 
 bool getEsCero(float t) {
-    return t < 1e-3;
+    return t < h;
+}
+
+vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
+    return (normalize(map(p) - 
+        vec3(map(-h * vec3(1,0,0) + p),
+        map(-h * y + p), 
+        map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
@@ -31,25 +41,24 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     rd = rd.xzy transforma xyz en xzy
     TODO: origen en esq sup izda
     */
-    vec3 frente = vec3(0, 1, 0), //coordenada y
-        ro = -frente,
+    vec3 ro = -y,
         rd = normalize(vec3((2.0 / iResolution.xy * 
-        fragCoord - vec2(1)), 1)), //z = 1
-        color = vec3(0);    
-    float t = map(ro);
+        fragCoord - vec2(1)), 1)), //z = 1      
+        color = getNormal(ro);
+    float t = map(ro); 
     bool esCero = getEsCero(t);
     
     rd.x *= iResolution.x / iResolution.y;
                  
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
-    for (int i = 0; !esCero && i < 1000; i++) {
+    for (int i = 0; !esCero && i < 1000; i++) { 
         ro += rd * t;        
         t = map(ro);         
-        esCero = getEsCero(t);                       
+        esCero = getEsCero(t);
     }
-    
-    fragColor = vec4(vec3(int(esCero)), 1);    
+        
+    fragColor = vec4(getNormal(ro), 1);    
 }
 
 /*rd.x /= 1.0 / iResolution.x * iResolution.y; 
