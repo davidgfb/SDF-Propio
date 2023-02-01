@@ -1,6 +1,6 @@
 float map(vec3 p) {
-    return length(p) - 0.5;
-    //return min(length(p) - 0.5, p.z + 1.0);
+    //return length(p) - 0.5;
+    return min(length(p) - 0.5, p.z + 1.0);
     //return p.z + 1.0;
 }
 
