@@ -36,19 +36,17 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1
         color = vec3(0);    
-    float t = map(ro),
-        tMin = 2.0 * t; //fuerza la entrada a la cond
+    float t = map(ro);
     bool esCero = getEsCero(t);
     
     rd.x *= iResolution.x / iResolution.y;
                  
     rd = rd.xzy; //z --> y = 1, y --> z, x cte
          
-    while (!esCero && t < tMin) { //este algoritmo NO mola
+    for (int i = 0; i < 100; i++) { //while (!esCero && t < tMin) { //este algoritmo NO mola
         ro += rd * t;        
         t = map(ro);         
-        esCero = getEsCero(t);                
-        tMin = t;         
+        esCero = getEsCero(t);                       
     }
     
     fragColor = vec4(vec3(int(esCero)), 1);    
