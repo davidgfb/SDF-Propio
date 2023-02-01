@@ -19,8 +19,6 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
 }
 
 vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
-    //bool esCero = cond;
-
     for (int i = 0; cond && i < nPasos; i++) { 
         ro += rd * t;        
         t = map(ro);                   
