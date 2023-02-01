@@ -60,14 +60,14 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     if (esCero) { //sombra directa 
         rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
         
-        /*vRayMarch = rayMarch(t > 1e-4, nPasos_Sombra, ro, rd, t);
+        vec4 vRayMarch = rayMarch(t > 1e-4, nPasos_Sombra, ro, rd, t);
         ro = vRayMarch.xyz;
-        t = vRayMarch.a;*/
+        t = vRayMarch.a;
         
-        for (int i = 0; t > 1e-4 && i < nPasos_Sombra; i++) { 
+        /*for (int i = 0; t > 1e-4 && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro);                     
-        }
+        }*/
    
         if (t <= 1e-4) color -= vec3(0.1);         
     }
