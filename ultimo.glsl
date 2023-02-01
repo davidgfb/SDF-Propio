@@ -18,24 +18,21 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
-vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool usaCond) {
-    bool esCero = cond;
+vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+    //bool esCero = cond;
 
     for (int i = 0; cond && i < nPasos; i++) { 
         ro += rd * t;        
-        t = map(ro);   
-        
-        if (usaCond) {
-            esCero = getEsCero(t);
-        }
+        t = map(ro);                   
+        //esCero = getEsCero(t);        
     }
     
     return vec4(ro, t);
 }
 
-vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+/*vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
     return rayMarch(cond, nPasos, ro, rd, t, false);
-}
+}*/
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     int nPasos_Luz = int(1e4), //10 crea un efecto chulo
@@ -43,8 +40,8 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec3 ro = -y,
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1      
-        color = vec3(0); //,
-        //posLuz = vec3(1); //pto luz 
+        color = vec3(0); 
+    //vec3 posLuz = vec3(1); //pto luz 
     float t = map(ro); 
     bool esCero = getEsCero(t);
         
@@ -57,9 +54,9 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         esCero = getEsCero(t);
     }
     
-    /*vec4 vRayMarch = rayMarch(!esCero, nPasos_Luz, ro, rd, t, true);
+    /*vec4 vRayMarch = rayMarch(!getEsCero(t), nPasos_Luz, ro, rd, t);
     ro = vRayMarch.xyz;
-    t = vRayMarch.a;*/ 
+    t = vRayMarch.a;*/
     
     color = getNormal(ro); //no hay contacto (i = 1000)  
         
