@@ -35,11 +35,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         posLuz = vec3(10); //pto luz 
     float t = map(ro); 
     bool esCero = getEsCero(t);
-    
-    if (esCero) {
-        color = getNormal(ro);
-    }
-    
+        
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte         
     
