@@ -16,47 +16,60 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
-void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
-    /*OBJ: fragCoord / iResolution.xy (uv) normaliza 
-    la pos del pixel en pantalla entre [0, 1] en 
-    euclideas NO en polares [-1, 1]!
-    El origen esta en la esq inf izda!
-    fragCoord = pos pixel en pantalla
-    iResolution = resolucion pantalla
-    ej: 1er pixel esq inf izda: (0.5, 0.5) / 
-    (1920, 1080) = (0, 0)    
-    n-esimo pixel esq sup dcha: (1919'5, 1079'5) / 
-    (1920, 1080) = (1, 1)  
-    
-    rd normaliza uv entre [-1, 1]
-    ej: (0, 0): 2 * (0, 0) - (1, 1) = 
-    (0, 0) - (1, 1) = (-1, -1) 
-    (1, 1): 2 * (1, 1) - (1, 1) = 
-    (2, 2) - (1, 1) = (1, 1) 
-    iResolution.x / iResolution.y corrige la 
-    relacion de aspecto
-    normalize coordenadas: euclideas --> polares    
-    rd = rd.xzy transforma xyz en xzy
-    TODO: origen en esq sup izda
-    */
-    vec3 ro = -y,
-        rd = normalize(vec3((2.0 / iResolution.xy * 
-        fragCoord - vec2(1)), 1)), //z = 1      
-        color = getNormal(ro);
-    float t = map(ro); 
-    bool esCero = getEsCero(t);
-    
-    rd.x *= iResolution.x / iResolution.y;
-                 
-    rd = rd.xzy; //z --> y = 1, y --> z, x cte
-         
+vec3 rayCast(bool esCero, vec3 ro, vec3 rd, float t) {
     for (int i = 0; !esCero && i < 1000; i++) { 
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);
     }
+    
+    return ro;
+}
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    vec3 ro = -y,
+        rd = normalize(vec3((2.0 / iResolution.xy * 
+        fragCoord - vec2(1)), 1)), //z = 1      
+        color = vec3(0),
+        posLuz = vec3(1);
+    float t = map(ro); 
+    bool esCero = getEsCero(t);
+    
+    if (esCero) {
+        color = getNormal(ro);
+    }
+    
+    rd.x *= iResolution.x / iResolution.y;                 
+    rd = rd.xzy; //z --> y = 1, y --> z, x cte         
+    
+    for (int i = 0; !esCero && i < 1000; i++) { 
+        ro += rd * t;        
+        t = map(ro);         
+        esCero = getEsCero(t);
+    }
+    //ro = rayCast(esCero, ro, rd, t);
         
-    fragColor = vec4(getNormal(ro), 1);    
+    //rayCast(); 
+    if (esCero) { //sombras 
+        esCero = false;
+        rd = normalize(posLuz - ro);
+   
+        /*for (int i = 0; !esCero && i < 1000; i++) { 
+            ro += rd * t;        
+            t = map(ro);         
+            esCero = getEsCero(t);
+        }*/
+   
+        if (esCero) {
+            color = vec3(0);
+        } else {
+            color = getNormal(ro);
+        }
+    } else {
+        color = getNormal(ro);
+    }
+         
+    fragColor = vec4(color, 1);    
 }
 
 /*rd.x /= 1.0 / iResolution.x * iResolution.y; 
