@@ -1,5 +1,6 @@
 float h = 1e-3, r = 0.5;
 vec3 y = vec3(0, 1, 0);
+int nPasos_Sombra = 100;
 
 float map(vec3 p) {
     return min(length(p) - r, p.z + r);
@@ -49,24 +50,20 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     }
     //ro = rayCast(esCero, ro, rd, t);
         
-    //rayCast(); 
-    if (esCero) { //sombras 
-        esCero = false;
-        rd = vec3(1,1,1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
-        color = getNormal(ro); //no hay contacto (i = 1000)
+    color = getNormal(ro); //no hay contacto (i = 1000)   
         
-        for (int i = 0; t > 1e-4 && i < 1000; i++) { 
+    //rayCast(); 
+    if (esCero) { //sombra luz directa 
+        esCero = false;
+        rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
+        
+        for (int i = 0; t > 1e-4 && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro);                     
         }
    
-        if (t <= 1e-4) {
-            color -= vec3(0.1);
-            //color = vec3(0);
-        } 
-    } else { //no hay contacto (i = 1000)
-        color = getNormal(ro);
-    }
+        if (t <= 1e-4) color -= vec3(0.1);         
+    } 
          
     fragColor = vec4(color, 1);    
 }
