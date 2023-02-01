@@ -44,22 +44,25 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte         
     
-    /*for (int i = 0; !esCero && i < nPasos_Luz; i++) { 
+    for (int i = 0; !esCero && i < nPasos_Luz; i++) { 
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);
-    }*/
+    }
     
-    vec4 rayMarch = rayMarch(!esCero, nPasos_Luz, ro, rd, t);
-    ro = rayMarch.xyz;
-    t = rayMarch.a;
-        
-    color = getNormal(ro); //no hay contacto (i = 1000)   
+    /*vec4 vRayMarch = rayMarch(!esCero, nPasos_Luz, ro, rd, t);
+    ro = vRayMarch.xyz;
+    t = vRayMarch.a;*/ 
+    
+    color = getNormal(ro); //no hay contacto (i = 1000)  
         
     //rayCast(); 
-    /*if (esCero) { //sombra directa 
-        esCero = false;
+    if (esCero) { //sombra directa 
         rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
+        
+        /*vRayMarch = rayMarch(t > 1e-4, nPasos_Sombra, ro, rd, t);
+        ro = vRayMarch.xyz;
+        t = vRayMarch.a;*/
         
         for (int i = 0; t > 1e-4 && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
@@ -67,7 +70,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         }
    
         if (t <= 1e-4) color -= vec3(0.1);         
-    }*/
+    }
          
     fragColor = vec4(color, 1);    
 }
