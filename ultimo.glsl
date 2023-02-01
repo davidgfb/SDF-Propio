@@ -31,7 +31,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1      
         color = vec3(0),
-        posLuz = vec3(1);
+        posLuz = 10.0 * vec3(1);
     float t = map(ro); 
     bool esCero = getEsCero(t);
     
@@ -54,7 +54,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         esCero = false;
         rd = normalize(posLuz - ro);
    
-        /*for (int i = 0; !esCero && i < 1000; i++) { 
+        /*for (int i = 0; t > 1e-5 && i < 1000; i++) { 
             ro += rd * t;        
             t = map(ro);         
             esCero = getEsCero(t);
