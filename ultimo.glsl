@@ -2,9 +2,7 @@ float h = 1e-3;
 vec3 y = vec3(0, 1, 0);
 
 float map(vec3 p) {
-    //return length(p) - 0.5;
     return min(length(p) - 0.5, p.z + 1.0);
-    //return p.z + 1.0;
 }
 
 bool getEsCero(float t) {
