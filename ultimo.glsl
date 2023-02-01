@@ -1,6 +1,7 @@
 float h = 1e-3, r = 0.5;
 vec3 y = vec3(0, 1, 0);
-int nPasos_Sombra = 100;
+int nPasos_Luz = int(1e4), //10 crea un efecto chulo
+    nPasos_Sombra = 100;
 
 float map(vec3 p) {
     return min(length(p) - r, p.z + r);
@@ -39,7 +40,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte         
     
-    for (int i = 0; !esCero && i < 1000; i++) { 
+    for (int i = 0; !esCero && i < nPasos_Luz; i++) { 
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);
