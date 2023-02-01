@@ -59,7 +59,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     color = getNormal(ro); //no hay contacto (i = 1000)  
         
     //rayCast(); 
-    if (esCero) { //sombra directa 
+    if (getEsCero(t)) { //sombra directa 
         rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
         
         vec4 vRayMarch = rayMarch(t > 1e-4, nPasos_Sombra, ro, rd, t);
