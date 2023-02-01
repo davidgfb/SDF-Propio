@@ -1,9 +1,9 @@
-float h = 1e-3, r = 0.5;
+float h = 1e-3; //h para gradiente, t para cero
 vec3 y = vec3(0, 1, 0);
-int nPasos_Luz = int(1e4), //10 crea un efecto chulo
-    nPasos_Sombra = 100;
 
 float map(vec3 p) {
+    float r = 0.5;
+    
     return min(length(p) - r, p.z + r);
 }
 
@@ -18,17 +18,19 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
-/*vec3 rayCast(bool esCero, vec3 ro, vec3 rd, float t) {
+/*vec4 rayCast(bool esCero, vec3 ro, vec3 rd, float t) {
     for (int i = 0; !esCero && i < 1000; i++) { 
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);
     }
     
-    return ro;
+    return vec4(ro, t);
 }*/
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
+    int nPasos_Luz = int(1e4), //10 crea un efecto chulo
+        nPasos_Sombra = 100;
     vec3 ro = -y,
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1      
