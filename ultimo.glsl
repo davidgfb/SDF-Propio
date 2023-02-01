@@ -18,15 +18,17 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
-/*vec4 rayCast(bool esCero, vec3 ro, vec3 rd, float t) {
-    for (int i = 0; !esCero && i < 1000; i++) { 
+vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+    bool esCero = cond;
+
+    for (int i = 0; cond && i < nPasos; i++) { 
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);
     }
     
     return vec4(ro, t);
-}*/
+}
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     int nPasos_Luz = int(1e4), //10 crea un efecto chulo
@@ -34,25 +36,28 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec3 ro = -y,
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1      
-        color = vec3(0),
-        posLuz = vec3(10); //pto luz 
+        color = vec3(0); //,
+        //posLuz = vec3(1); //pto luz 
     float t = map(ro); 
     bool esCero = getEsCero(t);
         
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte         
     
-    for (int i = 0; !esCero && i < nPasos_Luz; i++) { 
+    /*for (int i = 0; !esCero && i < nPasos_Luz; i++) { 
         ro += rd * t;        
         t = map(ro);         
         esCero = getEsCero(t);
-    }
-    //ro = rayCast(esCero, ro, rd, t);
+    }*/
+    
+    vec4 rayMarch = rayMarch(!esCero, nPasos_Luz, ro, rd, t);
+    ro = rayMarch.xyz;
+    t = rayMarch.a;
         
     color = getNormal(ro); //no hay contacto (i = 1000)   
         
     //rayCast(); 
-    if (esCero) { //sombra luz directa 
+    /*if (esCero) { //sombra directa 
         esCero = false;
         rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
         
@@ -62,7 +67,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         }
    
         if (t <= 1e-4) color -= vec3(0.1);         
-    } 
+    }*/
          
     fragColor = vec4(color, 1);    
 }
