@@ -1,4 +1,4 @@
-float h = 1e-3; //h para gradiente, t para cero
+const float h = 1e-3, h1 = h / 10.0; //h para gradiente, t para cero
 vec3 y = vec3(0, 1, 0);
 
 float map(vec3 p) {
@@ -18,7 +18,7 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * vec3(0,0,1) + p))) + 1.0) / 2.0;
 }
 
-vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+/*vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
     for (int i = 0; cond && i < nPasos; i++) { 
         ro += rd * t;        
         t = map(ro);                   
@@ -28,7 +28,7 @@ vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
     return vec4(ro, t);
 }
 
-/*vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
     return rayMarch(cond, nPasos, ro, rd, t, false);
 }*/
 
@@ -58,20 +58,19 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     
     color = getNormal(ro); //no hay contacto (i = 1000)  
         
-    //rayCast(); 
     if (esCero(t)) { //sombra directa 
         rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
         
-        vec4 vRayMarch = rayMarch(t > 1e-4, nPasos_Sombra, ro, rd, t);
+        /*vec4 vRayMarch = rayMarch(t > h1, nPasos_Sombra, ro, rd, t);
         ro = vRayMarch.xyz;
-        t = vRayMarch.a;
+        t = vRayMarch.a;*/
         
-        /*for (int i = 0; t > 1e-4 && i < nPasos_Sombra; i++) { 
+        for (int i = 0; t > h1 && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro);                     
-        }*/
+        }
    
-        if (t <= 1e-4) color -= vec3(0.1);         
+        if (t <= h1) color -= vec3(0.1);         
     }
          
     fragColor = vec4(color, 1);    
