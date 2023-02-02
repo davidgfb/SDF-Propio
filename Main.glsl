@@ -11,6 +11,10 @@ bool esCero(float t) {
     return t < h;
 }
 
+bool esMayorQ_Cero(float t) {
+    return t > h1;
+}
+
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
     return (normalize(map(p) - 
         vec3(map(-h * vec3(1,0,0) + p),
@@ -65,12 +69,12 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         ro = vRayMarch.xyz;
         t = vRayMarch.a;*/
         
-        for (int i = 0; t > h1 && i < nPasos_Sombra; i++) { 
+        for (int i = 0; esMayorQ_Cero(t) && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro);                     
         }
    
-        if (t <= h1) color -= vec3(0.1);         
+        if (!esMayorQ_Cero(t)) color -= vec3(0.1);         
     }
          
     fragColor = vec4(color, 1);    
