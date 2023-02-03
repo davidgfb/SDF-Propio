@@ -10,7 +10,9 @@ struct vec5 {
 float map(vec3 p) {
     float r = 0.5;
     
+    //return length(p) - r;
     return min(length(p) - r, p.z + r);
+    //return p.z + r;
 }
 
 bool esCero(float t) {
