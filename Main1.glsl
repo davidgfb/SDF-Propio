@@ -72,8 +72,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         
     if (cond) { //sombra directa 
         cond = esMuchoMayorQ_Cero(t);
-        rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
-        
+        rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);        
         vec5 vRayMarch = rayMarch(cond, nPasos_Sombra, ro, rd, t, true);
         t = vRayMarch.a;
         
