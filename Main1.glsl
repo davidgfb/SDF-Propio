@@ -14,13 +14,13 @@ float map(vec3 p) {
 }
 
 bool esMayorQ_Cero(float t) {
-    float h1 = h / 10.0;
-    
-    return t > h1;
+    return t > h; //t > 1e-3    
 }
 
 bool esMuchoMayorQ_Cero(float t) {    
-    return t > h;
+    float h1 = h / 10.0; //t >> 1e-4
+    
+    return t > h1;
 }
 
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
