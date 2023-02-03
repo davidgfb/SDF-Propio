@@ -67,8 +67,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec5 vRayMarch = rayMarch(cond, nPasos_Luz, ro, rd, t, false);
     ro = vRayMarch.c;
     t = vRayMarch.a; //*= 2.0; 
-    cond = vRayMarch.con;
-    
+    cond = vRayMarch.con;   
     color = getNormal(ro); //no hay contacto (i = 1000)  
         
     if (cond) { //sombra directa 
@@ -84,7 +83,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             cond = esMuchoMayorQ_Cero(t);
         }*/
    
-        if (!cond) color -= vec3(0.1);
+        //if (!cond) color -= vec3(0.1);
         //if (!vRayMarch.con) color -= vec3(0.1);
     }
          
