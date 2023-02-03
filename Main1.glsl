@@ -1,4 +1,4 @@
-const float h = 1e-3, h1 = h / 10.0; //h para gradiente
+const float h = 1e-3; //h para gradiente
 vec3 y = vec3(0, 1, 0);
 
 struct vec5 {
@@ -14,6 +14,8 @@ float map(vec3 p) {
 }
 
 bool esMayorQ_Cero(float t) {
+    float h1 = h / 10.0;
+    
     return t > h1;
 }
 
@@ -27,7 +29,6 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
 }
 
 vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool cond1) {
-    //if cond
     for (int i = 0; cond && i < nPasos; i++) { //bEsCero = false --> !bEsCero = true 
         ro += rd * t;        
         t = map(ro);                   
