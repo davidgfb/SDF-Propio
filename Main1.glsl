@@ -15,11 +15,11 @@ float map(vec3 p) {
     //return p.z + r;
 }
 
-bool esCero(float t) {
+bool esPequegno(float t) {
     return t < h; //t < 1e-3    
 }
 
-bool esMasCero(float t) {    
+bool esMasPequegno(float t) {    
     float h1 = h / 10.0; //t << 1e-4
     
     return t < h1;
@@ -34,9 +34,9 @@ vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool cond1) {
     for (int i = 0; cond && i < nPasos; i++) { //bEsCero = false --> !bEsCero = true 
         ro += rd * t;        
         t = map(ro);                   
-        cond = esCero(t);
+        cond = esPequegno(t);
         
-        if (cond1) cond = esMasCero(t); //Sombras
+        if (cond1) cond = esMasPequegno(t); //Sombras
     }
     
     return vec5(ro, t, cond);
@@ -55,7 +55,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         color = vec3(0); 
     //vec3 posLuz = vec3(1); //pto luz 
     float t = map(ro); 
-    bool cond = esCero(t);
+    bool cond = esPequegno(t);
         
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte         
@@ -63,7 +63,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     for (int i = 0; cond && i < nPasos_Luz; i++) { 
         ro += rd * t;        
         t = map(ro);         
-        cond = esCero(t);
+        cond = esPequegno(t);
     }
     
     /*vec5 vRayMarch = rayMarch(cond, nPasos_Luz, ro, rd, t, false);
@@ -74,7 +74,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     color = getNormal(ro); //no hay contacto (i = 1000)  
         
     if (cond) { //sombra directa 
-        cond = esMasCero(t);
+        cond = esMasPequegno(t);
         rd = vec3(1); //-1? //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);        
         
         /*vec5 vRayMarch = rayMarch(cond, nPasos_Sombra, ro, rd, t, true);
@@ -83,7 +83,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         for (int i = 0; cond && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro); 
-            cond = esMasCero(t);
+            cond = esMasPequegno(t);
         }
    
         if (cond) color -= vec3(0.1);
