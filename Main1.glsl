@@ -14,11 +14,11 @@ float map(vec3 p) {
 }
 
 bool esMenorQ_Cero(float t) {
-    return t < h; //t > 1e-3    
+    return t < h; //t < 1e-3    
 }
 
 bool esMuchoMenorQ_Cero(float t) {    
-    float h1 = h / 10.0; //t >> 1e-4
+    float h1 = h / 10.0; //t << 1e-4
     
     return t < h1;
 }
