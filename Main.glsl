@@ -1,4 +1,4 @@
-const float h = 1e-3, h1 = h / 10.0; //h para gradiente, t para cero
+const float h = 1e-3, h1 = h / 10.0; //h para gradiente
 vec3 y = vec3(0, 1, 0);
 
 float map(vec3 p) {
