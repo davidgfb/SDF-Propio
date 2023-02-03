@@ -75,14 +75,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         cond = esMuchoMayorQ_Cero(t);
         rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);
         
-        /*vec5 vRayMarch = rayMarch(cond, nPasos_Sombra, ro, rd, t, true);
-        t = vRayMarch.a;*/
+        vec5 vRayMarch = rayMarch(cond, nPasos_Sombra, ro, rd, t, true);
+        t = vRayMarch.a;
         
-        for (int i = 0; cond && i < nPasos_Sombra; i++) { 
+        /*for (int i = 0; cond && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro); 
             cond = esMuchoMayorQ_Cero(t);
-        }
+        }*/
    
         if (!cond) color -= vec3(0.1);
         //if (!vRayMarch.con) color -= vec3(0.1);
