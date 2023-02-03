@@ -36,7 +36,7 @@ vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     int nPasos_Luz = int(1e4), //10 crea un efecto chulo
-        nPasos_Sombra = 100;
+        nPasos_Sombra = nPasos_Luz / 10; //100;
     vec3 ro = -y,
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1      
