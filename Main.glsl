@@ -16,10 +16,8 @@ bool esMayorQ_Cero(float t) {
 }
 
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
-    return (normalize(map(p) - 
-        vec3(map(vec3(-h, 0, 0) + p),
-        map(-h * y + p), 
-        map(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
+    return (normalize(map(p) - vec3(map(vec3(-h, 0, 0) + p), 
+        map(-h * y + p), map(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
 }
 
 /*vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
