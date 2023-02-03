@@ -34,7 +34,7 @@ vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool cond1) {
         t = map(ro); 
         cond = esCero(t);
         
-        if (cond1) cond = esMayorQ_Cero(t); 
+        if (cond1) cond = !esMayorQ_Cero(t); 
     }
     
     return vec5(ro, t, cond); //vec5(vec4(ro, t), cond);
@@ -53,40 +53,40 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
         color = vec3(0); 
     //vec3 posLuz = vec3(1); //pto luz 
     float t = map(ro);
-    bool bEsCero = esCero(t);
+    bool cond = esCero(t);
     
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte         
     
-    for (int i = 0; !bEsCero && i < nPasos_Luz; i++) { 
+    /*for (int i = 0; !bEsCero && i < nPasos_Luz; i++) { 
         ro += rd * t;        
         t = map(ro);         
         bEsCero = esCero(t);
-    }
+    }*/
     
-    /*vec5 vRayMarch = rayMarch(!bEsCero, nPasos_Luz, ro, rd, t, false);
+    vec5 vRayMarch = rayMarch(!cond, nPasos_Luz, ro, rd, t, false);
     ro = vRayMarch.c;
     t = vRayMarch.a;
-    bEsCero = vRayMarch.con;*/
+    cond = vRayMarch.con;
     
     color = getNormal(ro); //no hay contacto (i = 1000)  
         
-    if (bEsCero) { //sombra directa 
-        bool bEsMayorQ_Cero = esMayorQ_Cero(t);
+    if (cond) { //sombra directa 
+        cond = esMayorQ_Cero(t);
        
-        /*rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);                
-        vRayMarch = rayMarch(bEsMayorQ_Cero, nPasos_Sombra, ro, rd, t, true); //t > h1, nPasos_Sombra, ro, rd, t);
+        rd = vec3(1); //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);                
+        vRayMarch = rayMarch(!cond, nPasos_Sombra, ro, rd, t, true); //t > h1, nPasos_Sombra, ro, rd, t);
         ro = vRayMarch.c;
-        t = vRayMarch.a;*/
+        t = vRayMarch.a;
         
-        for (int i = 0; bEsMayorQ_Cero && i < nPasos_Sombra; i++) { 
+        /*for (int i = 0; cond && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro); 
-            //bEsMayorQ_Cero = esMayorQ_Cero(t);
+            //cond = esMayorQ_Cero(t);
         }
           
-        if (!bEsMayorQ_Cero) color -= vec3(0.1);
-        //if (!vRayMarch.con) color -= vec3(0.1);         
+        if (!cond) color -= vec3(0.1);*/
+        if (!vRayMarch.con) color -= vec3(0.1);         
     }
          
     fragColor = vec4(color, 1);    
