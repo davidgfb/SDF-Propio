@@ -84,8 +84,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
            
     if (vRayMarch.con) { //sombra directa
         color = getNormal(ro);     
-        cond = esMasPequegno(t);
-        rd = vec3(1); //-1? //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);                
+        cond = esMasPequegno(t); 
+        rd = vec3(1); //y = contraluz, -y desde cam vec3(1); -1? luz direccional vec3(0, 0, 1) normalize(posLuz - ro);                
         
         if (rayMarch(cond, nPasos_Sombra, ro, rd, t, true).con) color -= vec3(0.1);
     }
