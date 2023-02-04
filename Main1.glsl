@@ -30,7 +30,7 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
         map(-h * y + p), map(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
 }
 
-vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool cond1) {
+/*vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool cond1) {
     for (int i = 0; cond && i < nPasos; i++) { //bEsCero = false --> !bEsCero = true 
         ro += rd * t;        
         t = map(ro);                   
@@ -40,7 +40,7 @@ vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool cond1) {
     }
     
     return vec5(ro, t, cond);
-}
+}*/
 
 /*vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
     return rayMarch(cond, nPasos, ro, rd, t, false);
@@ -60,7 +60,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte         
     
-    for (int i = 0; cond && i < nPasos_Luz; i++) { 
+    for (int i = 0; !cond && i < nPasos_Luz; i++) { 
         ro += rd * t;        
         t = map(ro);         
         cond = esPequegno(t);
@@ -70,17 +70,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     ro = vRayMarch.c;
     t = vRayMarch.a; //*= 2.0; 
     cond = vRayMarch.con;*/
+           
+    if (cond) { //sombra directa
+        color = getNormal(ro); 
     
-    color = getNormal(ro); //no hay contacto (i = 1000)  
-        
-    if (cond) { //sombra directa 
         cond = esMasPequegno(t);
         rd = vec3(1); //-1? //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);        
         
         /*vec5 vRayMarch = rayMarch(cond, nPasos_Sombra, ro, rd, t, true);
         t = vRayMarch.a;*/
         
-        for (int i = 0; cond && i < nPasos_Sombra; i++) { 
+        for (int i = 0; !cond && i < nPasos_Sombra; i++) { 
             ro += rd * t;        
             t = map(ro); 
             cond = esMasPequegno(t);
