@@ -1,6 +1,5 @@
 const float h = 1e-3; //h para gradiente
 vec3 y = vec3(0, 1, 0);
-
 struct vec5 {
     vec3 c;
     float a;
@@ -10,9 +9,7 @@ struct vec5 {
 float map(vec3 p) {
     float r = 0.5;
     
-    //return length(p) - r;
     return min(length(p) - r, p.z + r);
-    //return p.z + r;
 }
 
 bool esPequegno(float t) {
@@ -55,17 +52,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         color = vec3(0); 
     //vec3 posLuz = vec3(1); //pto luz 
     float t = map(ro); 
-    bool cond = esPequegno(t);
-        
+    bool cond = esPequegno(t);        
     rd.x *= iResolution.x / iResolution.y;                 
-    rd = rd.xzy; //z --> y = 1, y --> z, x cte         
-    
-    /*for (int i = 0; !cond && i < nPasos_Luz; i++) { 
-        ro += rd * t;        
-        t = map(ro);         
-        cond = esPequegno(t);
-    }*/
-    
+    rd = rd.xzy; //z --> y = 1, y --> z, x cte             
     vec5 vRayMarch = rayMarch(cond, nPasos_Luz, ro, rd, t, false);
     ro = vRayMarch.c;
     t = vRayMarch.a; //*= 2.0; 
@@ -75,15 +64,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         cond = esMasPequegno(t);
         rd = vec3(1); //-1? //luz direccional //vec3(0, 1, 0); //normalize(posLuz - ro);                
         vec5 vRayMarch = rayMarch(cond, nPasos_Sombra, ro, rd, t, true);
-        t = vRayMarch.a;
-        
-        /*for (int i = 0; !cond && i < nPasos_Sombra; i++) { 
-            ro += rd * t;        
-            t = map(ro); 
-            cond = esMasPequegno(t);
-        }
-   
-        if (cond) color -= vec3(0.1);*/
         
         if (vRayMarch.con) color -= vec3(0.1);
     }
