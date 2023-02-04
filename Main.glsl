@@ -17,7 +17,7 @@ bool esPequegno(float t) {
 }
 
 bool esMasPequegno(float t) {    
-    float h1 = h / 10.0; //t << 1e-4
+    float h1 = h / 10.0; //t < 1e-4 (<< 1e-3)
     
     return t < h1;
 }
@@ -39,11 +39,33 @@ vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t, bool cond1) {
     return vec5(ro, t, cond);
 }
 
-/*vec4 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
+vec5 rayMarch(bool cond, int nPasos, vec3 ro, vec3 rd, float t) {
     return rayMarch(cond, nPasos, ro, rd, t, false);
-}*/
+}
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
+    /*OBJ: fragCoord / iResolution.xy (uv) normaliza 
+    la pos del pixel en pantalla entre [0, 1] en 
+    euclideas NO en polares [-1, 1]!
+    El origen esta en la esq inf izda!
+    fragCoord = pos pixel en pantalla
+    iResolution = resolucion pantalla
+    ej: 1er pixel esq inf izda: (0.5, 0.5) / 
+    (1920, 1080) = (0, 0)    
+    n-esimo pixel esq sup dcha: (1919'5, 1079'5) / 
+    (1920, 1080) = (1, 1)  
+    
+    rd normaliza uv entre [-1, 1]
+    ej: (0, 0): 2 * (0, 0) - (1, 1) = 
+    (0, 0) - (1, 1) = (-1, -1) 
+    (1, 1): 2 * (1, 1) - (1, 1) = 
+    (2, 2) - (1, 1) = (1, 1) 
+    iResolution.x / iResolution.y corrige la 
+    relacion de aspecto
+    normalize coordenadas: euclideas --> polares    
+    rd = rd.xzy transforma xyz en xzy
+    TODO: origen en esq sup izda
+    */
     int nPasos_Luz = int(1e4), //10 crea un efecto chulo
         nPasos_Sombra = nPasos_Luz / 10; //100;
     vec3 ro = -y,
@@ -53,9 +75,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //vec3 posLuz = vec3(1); //pto luz 
     float t = map(ro); 
     bool cond = esPequegno(t);        
+    
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte             
-    vec5 vRayMarch = rayMarch(cond, nPasos_Luz, ro, rd, t, false);
+    vec5 vRayMarch = rayMarch(cond, nPasos_Luz, ro, rd, t);
     ro = vRayMarch.c;
     t = vRayMarch.a; //*= 2.0; 
            
@@ -70,8 +93,3 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
          
     fragColor = vec4(color, 1);    
 }
-
-/*rd.x /= 1.0 / iResolution.x * iResolution.y; 
-rd.x /= iResolution.y;
-rd.x *= iResolution.x;
-*/
