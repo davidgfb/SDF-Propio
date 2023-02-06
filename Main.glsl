@@ -90,7 +90,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //vec3 posLuz = vec3(1); //pto luz               
     rayo.dire.x *= iResolution.x / iResolution.y;                 
     rayo.dire = rayo.dire.xzy; //z --> y = 1, y --> z, x cte             
-    vec5 vRayMarch = rayMarch(rayo.origen, rayo.dire);
+    vec5 vRayMarch = rayMarch(rayo);
     rayo.origen = vRayMarch.c;
                
     if (vRayMarch.con) { //sombra directa
