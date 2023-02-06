@@ -1,5 +1,4 @@
-float h = 1e-3, //h para gradiente
-    drawDist = 1e4;
+float h = 1e-3, drawDist = 1e4; //h para gradiente    
 vec3 y = vec3(0, 1, 0);
 struct vec5 {
     vec3 c;
@@ -82,21 +81,24 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     rd = rd.xzy transforma xyz en xzy
     TODO: origen en esq sup izda
     */
-    vec3 ro = -y,
-        rd = normalize(vec3((2.0 / iResolution.xy * 
-        fragCoord - vec2(1)), 1)), //z = 1      
-        color = vec3(0); 
+    struct Rayo {
+        vec3 origen, dire;
+    };
+    
+    Rayo rayo = Rayo(-y, normalize(vec3((2.0 / iResolution.xy * 
+        fragCoord - vec2(1)), 1))); //z = 1      
+    vec3 color = vec3(0);         
     //vec3 posLuz = vec3(1); //pto luz               
-    rd.x *= iResolution.x / iResolution.y;                 
-    rd = rd.xzy; //z --> y = 1, y --> z, x cte             
-    vec5 vRayMarch = rayMarch(ro, rd);
-    ro = vRayMarch.c;
+    rayo.dire.x *= iResolution.x / iResolution.y;                 
+    rayo.dire = rayo.dire.xzy; //z --> y = 1, y --> z, x cte             
+    vec5 vRayMarch = rayMarch(rayo.origen, rayo.dire);
+    rayo.origen = vRayMarch.c;
                
     if (vRayMarch.con) { //sombra directa
-        color = getNormal(ro);            
-        rd = vec3(1); //y = contraluz, -y desde cam vec3(1); -1? luz direccional vec3(0, 0, 1) normalize(posLuz - ro);                
+        color = getNormal(rayo.origen);            
+        rayo.dire = vec3(1); //y = contraluz, -y desde cam vec3(1); -1? luz direccional vec3(0, 0, 1) normalize(posLuz - ro);                
         
-        if (rayMarch(ro, rd, true).con) color -= vec3(0.1);
+        if (rayMarch(rayo.origen, rayo.dire, true).con) color -= vec3(0.1);
     }
          
     fragColor = vec4(color, 1);    
