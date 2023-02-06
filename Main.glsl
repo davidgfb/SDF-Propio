@@ -1,6 +1,6 @@
 float h = 1e-3, drawDist = 1e4; //h para gradiente    
 vec3 y = vec3(0, 1, 0);
-struct vec5 {
+struct RayMarch {
     vec3 c;
     float a;
     bool con;   
@@ -40,7 +40,7 @@ bool getCond(float t, bool cond1) {
     return cond;
 }
 
-vec5 rayMarch(Rayo rayo, bool cond1) {
+RayMarch getRayMarch(Rayo rayo, bool cond1) {
     vec3 R_O = rayo.origen; //puede ser el origen del rayo sombra
     float totalDist = get_TotalDist(rayo.origen, R_O),
         t = map(rayo.origen); 
@@ -54,11 +54,11 @@ vec5 rayMarch(Rayo rayo, bool cond1) {
         cond = getCond(t, cond1);
     }
     
-    return vec5(rayo.origen, t, cond);
+    return RayMarch(rayo.origen, t, cond);
 }
 
-vec5 rayMarch(Rayo rayo) {
-    return rayMarch(rayo, false);
+RayMarch getRayMarch(Rayo rayo) {
+    return getRayMarch(rayo, false);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -90,14 +90,14 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //vec3 posLuz = vec3(1); //pto luz               
     rayo.dire.x *= iResolution.x / iResolution.y;                 
     rayo.dire = rayo.dire.xzy; //z --> y = 1, y --> z, x cte             
-    vec5 vRayMarch = rayMarch(rayo);
-    rayo.origen = vRayMarch.c;
+    RayMarch rayMarch = getRayMarch(rayo);
+    rayo.origen = rayMarch.c;
                
-    if (vRayMarch.con) { //sombra directa
+    if (rayMarch.con) { //sombra directa
         color = getNormal(rayo.origen);            
         rayo.dire = vec3(1); //y = contraluz, -y desde cam vec3(1); -1? luz direccional vec3(0, 0, 1) normalize(posLuz - ro);                
         
-        if (rayMarch(rayo, true).con) color -= vec3(0.1);
+        if (getRayMarch(rayo, true).con) color -= vec3(0.1);
     }
          
     fragColor = vec4(color, 1);    
