@@ -1,4 +1,4 @@
-float h = 1e-3, drawDist = 200.0; //h para gradiente    
+float h = 1e-5, drawDist = 200.0; //h para gradiente    
 vec3 y = vec3(0, 1, 0);
 struct RayMarch {
     vec3 c;
