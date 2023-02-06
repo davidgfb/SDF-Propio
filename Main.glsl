@@ -17,10 +17,8 @@ bool esPequegno(float t) {
     return t < h; //t < 1e-3    
 }
 
-bool esMasPequegno(float t) {    
-    float h1 = h / 10.0; //t < 1e-4 (<< 1e-3)
-    
-    return t < h1;
+bool esMasPequegno(float t) {        
+    return esPequegno(10.0 * t); //t < 1e-4 (<< 1e-3), t < h1;
 }
 
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
@@ -97,8 +95,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     t = vRayMarch.a; //*= 2.0; 
            
     if (vRayMarch.con) { //sombra directa
-        color = getNormal(ro);     
-         
+        color = getNormal(ro);            
         rd = vec3(1); //y = contraluz, -y desde cam vec3(1); -1? luz direccional vec3(0, 0, 1) normalize(posLuz - ro);                
         
         if (rayMarch(ro, rd, t, true).con) color -= vec3(0.1);
