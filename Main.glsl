@@ -87,9 +87,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     Rayo rayo = Rayo(-y, normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1))); //z = 1      
     vec3 color = vec3(0);         
-    //vec3 posLuz = vec3(1); //pto luz               
-    rayo.dire.x *= iResolution.x / iResolution.y;                 
-    rayo.dire = rayo.dire.xzy; //z --> y = 1, y --> z, x cte             
+    //vec3 posLuz = vec3(1); //pto luz                
+    rayo.dire = vec3(rayo.dire.x / iResolution.y * iResolution.x, rayo.dire.zy); //z --> y = 1, y --> z, x cte 
     RayMarch rayMarch = getRayMarch(rayo);
     rayo.origen = rayMarch.c;
                
