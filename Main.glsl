@@ -5,6 +5,9 @@ struct vec5 {
     float a;
     bool con;   
 };
+struct Rayo {
+    vec3 origen, dire;
+};
 
 float map(vec3 p) {
     float r = 0.5;
@@ -37,25 +40,25 @@ bool getCond(float t, bool cond1) {
     return cond;
 }
 
-vec5 rayMarch(vec3 ro, vec3 rd, bool cond1) {
-    vec3 R_O = ro; //puede ser el origen del rayo sombra
-    float totalDist = get_TotalDist(ro, R_O),
-        t = map(ro); 
+vec5 rayMarch(Rayo rayo, bool cond1) {
+    vec3 R_O = rayo.origen; //puede ser el origen del rayo sombra
+    float totalDist = get_TotalDist(rayo.origen, R_O),
+        t = map(rayo.origen); 
     bool cond = getCond(t, cond1);
 
     while (!cond && totalDist < drawDist) { //bEsCero = false --> !bEsCero = true 
-        ro += rd * t;
-        totalDist = get_TotalDist(ro, R_O);
-        t = map(ro);                   
+        rayo.origen += rayo.dire * t;
+        totalDist = get_TotalDist(rayo.origen, R_O);
+        t = map(rayo.origen);                   
         
         cond = getCond(t, cond1);
     }
     
-    return vec5(ro, t, cond);
+    return vec5(rayo.origen, t, cond);
 }
 
-vec5 rayMarch(vec3 ro, vec3 rd) {
-    return rayMarch(ro, rd, false);
+vec5 rayMarch(Rayo rayo) {
+    return rayMarch(rayo, false);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -80,11 +83,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     normalize coordenadas: euclideas --> polares    
     rd = rd.xzy transforma xyz en xzy
     TODO: origen en esq sup izda
-    */
-    struct Rayo {
-        vec3 origen, dire;
-    };
-    
+    */    
     Rayo rayo = Rayo(-y, normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1))); //z = 1      
     vec3 color = vec3(0);         
@@ -98,7 +97,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         color = getNormal(rayo.origen);            
         rayo.dire = vec3(1); //y = contraluz, -y desde cam vec3(1); -1? luz direccional vec3(0, 0, 1) normalize(posLuz - ro);                
         
-        if (rayMarch(rayo.origen, rayo.dire, true).con) color -= vec3(0.1);
+        if (rayMarch(rayo, true).con) color -= vec3(0.1);
     }
          
     fragColor = vec4(color, 1);    
