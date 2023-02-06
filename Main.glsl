@@ -38,9 +38,10 @@ bool getCond(float t, bool cond1) {
     return cond;
 }
 
-vec5 rayMarch(vec3 ro, vec3 rd, float t, bool cond1) {
+vec5 rayMarch(vec3 ro, vec3 rd, bool cond1) {
     vec3 R_O = ro; //puede ser el origen del rayo sombra
-    float totalDist = get_TotalDist(ro, R_O); 
+    float totalDist = get_TotalDist(ro, R_O),
+        t = map(ro); 
     bool cond = getCond(t, cond1);
 
     while (!cond && totalDist < drawDist) { //bEsCero = false --> !bEsCero = true 
@@ -54,8 +55,8 @@ vec5 rayMarch(vec3 ro, vec3 rd, float t, bool cond1) {
     return vec5(ro, t, cond);
 }
 
-vec5 rayMarch(vec3 ro, vec3 rd, float t) {
-    return rayMarch(ro, rd, t, false);
+vec5 rayMarch(vec3 ro, vec3 rd) {
+    return rayMarch(ro, rd, false);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -85,20 +86,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         rd = normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1)), //z = 1      
         color = vec3(0); 
-    //vec3 posLuz = vec3(1); //pto luz 
-    float t = map(ro); 
-              
+    //vec3 posLuz = vec3(1); //pto luz               
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte             
-    vec5 vRayMarch = rayMarch(ro, rd, t);
+    vec5 vRayMarch = rayMarch(ro, rd);
     ro = vRayMarch.c;
-    t = vRayMarch.a; //*= 2.0; 
-           
+               
     if (vRayMarch.con) { //sombra directa
         color = getNormal(ro);            
         rd = vec3(1); //y = contraluz, -y desde cam vec3(1); -1? luz direccional vec3(0, 0, 1) normalize(posLuz - ro);                
         
-        if (rayMarch(ro, rd, t, true).con) color -= vec3(0.1);
+        if (rayMarch(ro, rd, true).con) color -= vec3(0.1);
     }
          
     fragColor = vec4(color, 1);    
