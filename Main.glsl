@@ -32,20 +32,25 @@ float get_TotalDist(vec3 R_O, vec3 ro) {
     return length(ro - R_O);
 }
 
+bool getCond(float t, bool cond1) {
+    bool cond = esPequegno(t);
+        
+    if (cond1) cond = esMasPequegno(t); //Sombras
+    
+    return cond;
+}
+
 vec5 rayMarch(vec3 ro, vec3 rd, float t, bool cond1) {
     vec3 R_O = ro; //puede ser el origen del rayo sombra
     float totalDist = get_TotalDist(ro, R_O); 
-    bool cond = esPequegno(t);
-        
-    if (cond1) cond = esMasPequegno(t);
+    bool cond = getCond(t, cond1);
 
     while (!cond && totalDist < drawDist) { //bEsCero = false --> !bEsCero = true 
         ro += rd * t;
         totalDist = get_TotalDist(ro, R_O);
         t = map(ro);                   
-        cond = esPequegno(t);
         
-        if (cond1) cond = esMasPequegno(t); //Sombras
+        cond = getCond(t, cond1);
     }
     
     return vec5(ro, t, cond);
@@ -84,8 +89,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         color = vec3(0); 
     //vec3 posLuz = vec3(1); //pto luz 
     float t = map(ro); 
-           
-    
+              
     rd.x *= iResolution.x / iResolution.y;                 
     rd = rd.xzy; //z --> y = 1, y --> z, x cte             
     vec5 vRayMarch = rayMarch(ro, rd, t);
