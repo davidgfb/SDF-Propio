@@ -9,10 +9,16 @@ struct Rayo {
     vec3 origen, dire;
 };
 
-float map(vec3 p) {
+float mapSombra(vec3 p) {
+   float r = 0.5;
+   
+   return min(min(length(p) - r, length(p - 0.8 * vec3(1, 0, 1)) - r), p.z + r);
+}
+
+float mapLuz(vec3 p) {
     float r = 0.5;
     
-    return min(length(p) - r, p.z + r);
+    return min(length(p) - r, p.z + r); 
 }
 
 bool esPequegno(float t) {
@@ -24,8 +30,8 @@ bool esMasPequegno(float t) {
 }
 
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
-    return (normalize(map(p) - vec3(map(vec3(-h, 0, 0) + p), 
-        map(-h * y + p), map(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
+    return (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
+        mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
 }
 
 float get_TotalDist(vec3 R_O, vec3 ro) {
@@ -43,13 +49,22 @@ bool getCond(float t, bool cond1) {
 RayMarch getRayMarch(Rayo rayo, bool cond1) {
     vec3 R_O = rayo.origen; //puede ser el origen del rayo sombra
     float totalDist = get_TotalDist(rayo.origen, R_O),
-        t = map(rayo.origen); 
+        t = mapLuz(rayo.origen); 
     bool cond = getCond(t, cond1);
+    
+    if (cond1) {
+        t = mapSombra(rayo.origen);
+        cond = getCond(t, cond1);
+    }
 
     while (!cond && totalDist < drawDist) { //bEsCero = false --> !bEsCero = true 
         rayo.origen += rayo.dire * t;
         totalDist = get_TotalDist(rayo.origen, R_O);
-        t = map(rayo.origen);                   
+        t = mapLuz(rayo.origen);                   
+        
+        if (cond1) {
+            t = mapSombra(rayo.origen);
+        }
         
         cond = getCond(t, cond1);
     }
