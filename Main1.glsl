@@ -46,26 +46,28 @@ bool getCond(float t, bool cond1) {
     return cond;
 }
 
+float getMapSombra(bool cond, Rayo rayo, float t) {
+    if (cond) t = mapSombra(rayo.origen);
+
+    return t;
+}
+
 RayMarch getRayMarch(Rayo rayo, bool cond1) {
     vec3 R_O = rayo.origen; //puede ser el origen del rayo sombra
     float totalDist = get_TotalDist(rayo.origen, R_O),
         t = mapLuz(rayo.origen); 
     bool cond = getCond(t, cond1);
     
-    if (cond1) {
-        t = mapSombra(rayo.origen);
-        cond = getCond(t, cond1);
-    }
+    t = getMapSombra(cond1, rayo, t);
+    
+    if (cond1) cond = getCond(t, cond1);
 
     while (!cond && totalDist < drawDist) { //bEsCero = false --> !bEsCero = true 
         rayo.origen += rayo.dire * t;
         totalDist = get_TotalDist(rayo.origen, R_O);
-        t = mapLuz(rayo.origen);                   
-        
-        if (cond1) {
-            t = mapSombra(rayo.origen);
-        }
-        
+        t = mapLuz(rayo.origen);                           
+        t = getMapSombra(cond1, rayo, t);
+                
         cond = getCond(t, cond1);
     }
     
