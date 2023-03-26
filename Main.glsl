@@ -18,7 +18,7 @@ float mapSombra(vec3 p) {
 float mapLuz(vec3 p) {
     float r = 0.5;
     
-    return min(length(p) - r, p.z + r); 
+    return min(length(p) - r, sin(p.x) * sin(p.y) + p.z + r); 
 }
 
 bool esPequegno(float t) {
