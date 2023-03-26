@@ -9,16 +9,24 @@ struct Rayo {
     vec3 origen, dire;
 };
 
-float mapSombra(vec3 p) {
+/*float mapSombra(vec3 p) {
    float r = 0.5;
    
    return min(min(length(p) - r, length(p - vec3(1, 1, 0)) - r), p.z + r); //0.8 * vec3(1, 0, 1)
+}*/
+
+float supcie(vec2 p) {
+    return sin(p.x) * sin(p.y);
 }
 
+vec2 posEsf = -vec2(-1, 1); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
 float mapLuz(vec3 p) {
-    float r = 0.5;
+    float r = 0.5,
+        pos = length(p + vec3(posEsf, supcie(posEsf))) - r; //p - INVERTIDO? x q NO funciona bien?
     
-    return min(length(p) - r, sin(p.x) * sin(p.y) + p.z + r); 
+    posEsf.y += iTime; //posEsf += y.xy * iTime; 
+    
+    return min(pos, supcie(p.xy) + p.z + r); 
 }
 
 bool esPequegno(float t) {
@@ -30,6 +38,8 @@ bool esMasPequegno(float t) {
 }
 
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
+    //return vec3(1);
+
     return (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
         mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
 }
@@ -47,7 +57,7 @@ bool getCond(float t, bool cond1) {
 }
 
 float getMapSombra(bool cond, Rayo rayo, float t) {
-    if (cond) t = mapSombra(rayo.origen);
+    if (cond) t = mapLuz(rayo.origen); //mapSombra(rayo.origen);
 
     return t;
 }
@@ -64,9 +74,8 @@ RayMarch getRayMarch(Rayo rayo, bool cond1) {
 
     while (!cond && totalDist < drawDist) { //bEsCero = false --> !bEsCero = true 
         rayo.origen += rayo.dire * t;
-        totalDist = get_TotalDist(rayo.origen, R_O);
-        t = mapLuz(rayo.origen);                           
-        t = getMapSombra(cond1, rayo, t);
+        totalDist = get_TotalDist(rayo.origen, R_O);                          
+        t = getMapSombra(cond1, rayo, mapLuz(rayo.origen));
                 
         cond = getCond(t, cond1);
     }
@@ -101,7 +110,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     rd = rd.xzy transforma xyz en xzy
     TODO: origen en esq sup izda
     */    
-    Rayo rayo = Rayo(-y * iTime, normalize(vec3((2.0 / iResolution.xy * 
+    Rayo rayo = Rayo(-2.0*y/* * iTime*/, normalize(vec3((2.0 / iResolution.xy * 
         fragCoord - vec2(1)), 1))); //z = 1      
     vec3 color = vec3(0);         
     //vec3 posLuz = vec3(1); //pto luz                
