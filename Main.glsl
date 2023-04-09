@@ -19,7 +19,7 @@ float supcie(vec2 p) {
     return sin(p.x) * sin(p.y); //0.0;
 }
 
-vec3 posEsf = vec3(-vec2(-1, 1), 0); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
+vec3 posEsf = vec3(0); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
 float mapLuz(vec3 p) {
     posEsf = vec3(posEsf.xy, supcie(posEsf.xy));
 
