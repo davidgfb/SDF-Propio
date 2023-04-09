@@ -19,16 +19,17 @@ float supcie(vec2 p) {
     return 0.0; //sin(p.x) * sin(p.y);
 }
 
-vec3 posEsf = vec3(-vec2(-1, 1), 0); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
+vec3 posEsf = vec3(-1, 1, 0); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
 float mapLuz(vec3 p) {
     posEsf = vec3(posEsf.xy, supcie(posEsf.xy));
 
     float r = 0.5,
-        pos = length(p + posEsf) - r; //p - INVERTIDO? x q NO funciona bien?
+        esf = length(p - posEsf) - r; //p - INVERTIDO? x q NO funciona bien?
     
-    posEsf.y += iTime; //posEsf += y.xy * iTime; //esta var NO se guarda?
+    //posEsf.y += 1.0; //x q esta fija??
+    //posEsf.y += iTime; //posEsf += y.xy * iTime; //esta var NO se guarda?
     
-    return min(pos, supcie(p.xy) + p.z + r); 
+    return min(esf, supcie(p.xy) + p.z + r); 
 }
 
 bool esPequegno(float t) {
