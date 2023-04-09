@@ -24,7 +24,7 @@ float mapLuz(vec3 p) {
     float r = 0.5,
         pos = length(p + vec3(posEsf, supcie(posEsf))) - r; //p - INVERTIDO? x q NO funciona bien?
     
-    posEsf.y += iTime; //posEsf += y.xy * iTime; 
+    //posEsf.y += iTime; //posEsf += y.xy * iTime; 
     
     return min(pos, supcie(p.xy) + p.z + r); 
 }
@@ -39,9 +39,15 @@ bool esMasPequegno(float t) {
 
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
     //return vec3(1);
-
-    return (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
+    vec3 normal = (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
         mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
+    float r = 0.5,
+        supEsf = length(p + vec3(posEsf, supcie(posEsf))) - r;
+    
+    if (supEsf < 1e-3) normal = vec3(1, 0, 0); 
+
+    return normal; /*(normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
+        mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;*/
 }
 
 float get_TotalDist(vec3 R_O, vec3 ro) {
