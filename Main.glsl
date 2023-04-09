@@ -26,7 +26,7 @@ float mapLuz(vec3 p) {
     float r = 0.5,
         esf = length(p - posEsf) - r; //p - INVERTIDO? x q NO funciona bien?
     
-    //posEsf.y += 1.0; //x q esta fija??
+    posEsf.y -= 1.0; //x q esta fija??
     //posEsf.y += iTime; //posEsf += y.xy * iTime; //esta var NO se guarda?
     
     return min(esf, supcie(p.xy) + p.z + r); 
