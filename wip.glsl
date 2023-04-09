@@ -19,26 +19,12 @@ float supcie(vec2 p) {
     return sin(p.x) * sin(p.y);
 }
 
-float getDistEsf(vec3 p) {
-    float r = 0.5;
-    
-    return supcie(p.xy) + p.z + r;
-}
-
-vec3 posEsf = vec3(-vec2(-1, 1), 0); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
-bool esEsfera(vec3 p) {
-    float r = 0.5;
-    
-    return getDistEsf(posEsf) == supcie(p.xy) + p.z + r; //solo el contacto!
-}
-
+vec2 posEsf = -vec2(-1, 1); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
 float mapLuz(vec3 p) {
-    posEsf.z = supcie(posEsf.xy);
-    
     float r = 0.5,
-        pos = length(p + posEsf) - r; //p - INVERTIDO? x q NO funciona bien?
+        pos = length(p + vec3(posEsf, supcie(posEsf))) - r; //p - INVERTIDO? x q NO funciona bien?
     
-    posEsf.y += iTime; //posEsf += y * iTime; 
+    //posEsf.y += iTime; //posEsf += y.xy * iTime; 
     
     return min(pos, supcie(p.xy) + p.z + r); 
 }
@@ -53,17 +39,17 @@ bool esMasPequegno(float t) {
 
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
     //return vec3(1);
-
-    return (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
+    vec3 normal = (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
         mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
-}
+    float r = 0.5,
+        supEsf = length(p + vec3(posEsf, supcie(posEsf))) - r;
+    
+    if (1e-4 < supEsf && supEsf < 1e-3) { //NO funciona
+        normal = vec3(1, 0, 0);
+    }
 
-vec3 getColor(vec3 p) {
-    vec3 color = getNormal(p);
-    
-    if (esEsfera(p)) color = getNormal(posEsf); //NO cambia durante frametime
-    
-    return color;
+    return normal; /*(normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
+        mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;*/
 }
 
 float get_TotalDist(vec3 R_O, vec3 ro) {
@@ -78,7 +64,7 @@ bool getCond(float t, bool cond1) {
     return cond;
 }
 
-float getMapLuz(bool cond, Rayo rayo, float t) {
+float getMapSombra(bool cond, Rayo rayo, float t) {
     if (cond) t = mapLuz(rayo.origen); //mapSombra(rayo.origen);
 
     return t;
@@ -90,14 +76,14 @@ RayMarch getRayMarch(Rayo rayo, bool cond1) {
         t = mapLuz(rayo.origen); 
     bool cond = getCond(t, cond1);
     
-    t = getMapLuz(cond1, rayo, t);
+    t = getMapSombra(cond1, rayo, t);
     
     if (cond1) cond = getCond(t, cond1);
 
     while (!cond && totalDist < drawDist) { //bEsCero = false --> !bEsCero = true 
         rayo.origen += rayo.dire * t;
         totalDist = get_TotalDist(rayo.origen, R_O);                          
-        t = getMapLuz(cond1, rayo, mapLuz(rayo.origen));
+        t = getMapSombra(cond1, rayo, mapLuz(rayo.origen));
                 
         cond = getCond(t, cond1);
     }
@@ -149,4 +135,3 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
          
     fragColor = vec4(color, 1);    
 }
-
