@@ -19,7 +19,7 @@ float supcie(vec2 p) {
     return sin(p.x) * sin(p.y); //0.0;
 }
 
-//OJO! esta haciendo el gradiente de TODAS las superficies!!!
+//OJO! esta haciendo el gradiente de TODAS las superficies. Hay q separarlas!!!
 vec3 posEsf = vec3(0); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
 float mapLuz(vec3 p) {
     posEsf = vec3(posEsf.xy, supcie(posEsf.xy));
