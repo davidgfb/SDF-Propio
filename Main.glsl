@@ -19,10 +19,13 @@ float supcie(vec2 p) {
     return sin(p.x) * sin(p.y);
 }
 
-vec2 posEsf = -vec2(-1, 1); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
+vec3 posEsf = vec3(0);
+vec2 posEsf2D = -vec2(-1, 1); //z es calculado, calcula BIEN!!! pueden ser las normales!!!
 float mapLuz(vec3 p) {
+    posEsf = vec3(posEsf2D, supcie(posEsf2D));
+
     float r = 0.5,
-        pos = length(p + vec3(posEsf, supcie(posEsf))) - r; //p - INVERTIDO? x q NO funciona bien?
+        pos = length(p + posEsf) - r; //p - INVERTIDO? x q NO funciona bien?
     
     //posEsf.y += iTime; //posEsf += y.xy * iTime; 
     
@@ -43,10 +46,10 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
     vec3 normal = (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
         mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
     float r = 0.5,
-        supEsf = length(p + vec3(posEsf, supcie(posEsf))) - r;
+        supEsf = length(p + posEsf) - r;
     
     if (supEsf < h) {
-        p = vec3(posEsf, supcie(posEsf));
+        p = posEsf;
     
         if (normalEsf == vec3(-1)) normalEsf = (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
             mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0; 
