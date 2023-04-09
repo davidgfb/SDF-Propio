@@ -45,7 +45,7 @@ vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 
     float r = 0.5,
         supEsf = length(p + vec3(posEsf, supcie(posEsf))) - r;
     
-    if (supEsf < 1e-3) {
+    if (supEsf < h) {
         p = vec3(posEsf, supcie(posEsf));
     
         if (normalEsf == vec3(-1)) normalEsf = (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
