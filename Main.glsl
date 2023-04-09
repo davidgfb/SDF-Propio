@@ -19,6 +19,10 @@ float supcie(vec2 p) {
     return sin(p.x) * sin(p.y); //0.0;
 }
 
+float supcie(vec3 p) {
+    return supcie(p.xy);
+}
+
 //OJO! esta haciendo el gradiente de TODAS las superficies. Hay q separarlas!!!
 vec3 posEsf = vec3(0); //z es calculado
 float mapLuz(vec3 p) {
@@ -44,15 +48,15 @@ vec3 normalEsf = vec3(-1);
 vec3 getNormal(vec3 p) { //gradiente normaliza entre [0, 1]. Ej: (-1 + 1) / 2 = 0, (1 + 1) / 2 = 1
     //return vec3(1);
     vec3 normal = (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
-        mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0;
+        mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0; //calcula supcie NO esf!
     float r = 0.5,
         supEsf = length(p + posEsf) - r;
     
-    if (supEsf < h) {
+    if (supEsf < h) { //solo calcula 1 vez la supcie BAJO la esf NO la esfera!
         p = posEsf;
     
-        if (normalEsf == vec3(-1)) normalEsf = (normalize(mapLuz(p) - vec3(mapLuz(vec3(-h, 0, 0) + p), 
-            mapLuz(-h * y + p), mapLuz(vec3(0, 0, -h) + p))) + 1.0) / 2.0; 
+        if (normalEsf == vec3(-1)) normalEsf = (normalize(supcie(p) - vec3(supcie(vec3(-h, 0, 0) + p), 
+            supcie(-h * y + p), supcie(vec3(0, 0, -h) + p))) + 1.0) / 2.0; 
         
         normal = normalEsf; //normal = vec3(1, 0, 0); 
     }
