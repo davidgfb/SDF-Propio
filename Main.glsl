@@ -27,7 +27,7 @@ float mapLuz(vec3 p) {
     float r = 0.5,
         pos = length(p + posEsf) - r; //p - INVERTIDO? x q NO funciona bien?
     
-    //posEsf.y += iTime; //posEsf += y.xy * iTime; 
+    posEsf.y += iTime; //posEsf += y.xy * iTime; //es 1 fallo de pos3D/2D? esta var NO es k!
     
     return min(pos, supcie(p.xy) + p.z + r); 
 }
