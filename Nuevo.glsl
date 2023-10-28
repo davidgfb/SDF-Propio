@@ -7,10 +7,9 @@ fragColor is used as output channel. It is not, for now,
     mandatory but recommended to leave the alpha channel to 1.0.
 
 vec3 iResolution image/buffer The viewport resolution (z is pixel 
-    aspect ratio, usually 1.0)
+    aspect ratio, usually 1.0) siempre será 1
 float iTime	image/sound/buffer Current time in seconds
 */
-
 float d_Esfera(vec3 p, float r) { 
     return length(p) - r;
 }
@@ -23,20 +22,21 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
     //falta añadir el origen de la cam detras del plano fragcoord
     //proy ortogonal/normal para perspectiva v = fragcoord - origen_Cam
     //normalizo v en coord polares
-    //no funciona escala
+    fragCoord *= 1e3 / iResolution.x; //cte / variable
+    
     float p_Y = 0.0;
     vec3 col = vec3(0), z = vec3(0, 0, 1), x = z.zxx, y = z.xzx, 
         p = vec3(fragCoord.x, -p_Y, -fragCoord.y) - 400.0*x + 300.0*z,
         v = y; //p.y tiene q ser opuesto
            
     float f_D_Esfera = d_Esfera(p);
-    int d_Max = int(100), i_D_Esfera = int(f_D_Esfera); 
+    int d_Max = int(1), i_D_Esfera = int(f_D_Esfera); 
     
     for (i_D_Esfera; i_D_Esfera < d_Max;) { //while
         p += v*f_D_Esfera;
               
-        if (f_D_Esfera < 1.0) {
-            col = z.zzz; 
+        if (f_D_Esfera < 1e-5) {
+            col = normalize(col-p); //vec3();//z.zzz; 
             i_D_Esfera = d_Max;
         
         } else {
