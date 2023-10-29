@@ -67,9 +67,11 @@ float draw_uint_with_sign(vec2 p, int number, bool negative){
     return color;
 }
 
+/*
 float draw_int(vec2 p, int number){
     return draw_uint_with_sign(p, number, number < 0);
 }
+*/
 
 float draw_float(vec2 p, float f){
     float color = draw_uint_with_sign(p, int(f), f < 0.0);
@@ -121,23 +123,25 @@ actualizo posicion cada frame en f de tiempo.
 iTimeDelta (f) = Tiempo/frame, 16ms/frame
 iFrameRate(t)
 */
+float v1 = 0.0;
+
 float d_Supcie(vec3 p) {
     if (f_Actual != iFrame) { 
         /*
         estas variables son ctes durante frameTime
         actualiza solo UNA vez x frametime
         */
-        float g = 9.8, v_Term = 55.0, v = 0.0; //v(11) = v_Term
+        float g = 9.8, v_Term = 55.0/*, v = 0.0*/; //v(11) = v_Term
 
         //v != v_Term
-        //float - vec3!!
-        //if (/*p_Min_Esfera.z*/-r_Esfera-h_Plano > 0.0) { 
-            if (v < v_Term) v = g/2.0*iTime; 
-            else if (v > v_Term) v = v_Term; 
+        //float - vec3!!, 300>200
+        if (r_Esfera-h_Plano > 2.0*r_Esfera) { //p_Min_Esfera.z
+            if (v1 < v_Term) v1 = g/2.0*iTime; 
+            else if (v1 > v_Term) v1 = v_Term; //NO funca
 
-        //} else if (v > 0.0) v = 0.0; //NO funca
+        } else if (v1 > 0.0) v1 = 0.0; //NO funca
 
-        h_Plano += v*iTime;
+        h_Plano += v1*iTime;
 
         /*
         movto SIEMPRE en f(t).
@@ -174,7 +178,8 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
     proy ortogonal/normal para perspectiva v = fragcoord - origen_Cam
     normalizo v en coord polares
     */
-    fragCoord *= 1e3 / iResolution.x; //cte / variable
+    fragCoord *= 1e3 / iResolution.x; //cte / variable, 1000/800=1.25
+    //1000/1920 = 0.52
     
     float p_Y = 0.0;
     vec3 col = vec3(0), x = z.zxx, y = z.xzx,  
@@ -199,6 +204,14 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
             */
                                             
             col = normalize(col-p); //col direccion, vec3(1);
+                                     
+            //bottom left of text
+            vec2 position = vec2(0.0);
+            
+            col += draw_float(position, 
+                float(r_Esfera-h_Plano > 2.0*r_Esfera));
+
+            position.y += DIGIT_HEIGHT;            
         
         } else f_D_Supcie = d_Supcie(p);
     }
@@ -208,21 +221,26 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
     // Time varying pixel color
     vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
     */   
+    
     //////////////// debug //////////////////
     float color = 0.0;
     
     // bottom left of text
     vec2 position = vec2(0.0);
     
-    F f = draw_float(color, position, iTime, DIGIT_HEIGHT);
-    color = f.c;
-    position.y = f.y;
+    /*color += draw_float(position, v);
+
+    position.y += DIGIT_HEIGHT;
+    
+    //fragCoord.x, .y no representa bien
+    F f = draw_float(color, position, v, DIGIT_HEIGHT);
+    color = f.c; //2.0*r_Esfera r_Esfera-h_Plano
+    position.y = f.y;    
     
     f = draw_float(color, position, 3.14, DIGIT_HEIGHT);
     color = f.c;
     position.y = f.y;
-        
-    color += draw_int(position, -12345);
+    */
     ////////// debug //////////////
         
     fragColor = vec4(col, 1.0) + vec4(color);
