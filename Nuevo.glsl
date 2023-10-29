@@ -7,10 +7,12 @@ fragColor is used as output channel. It is not, for now,
 vec3 iResolution image/buffer The viewport resolution 
 float iTime	image/sound/buffer Current time in seconds
 todas las direcciones deben estar normalizadas
+Todas estas variables se recargan x cada pixel.
+Ojo a que sean constantes
 */
 vec3 z = vec3(0, 0, 1), p_Min_Esfera = vec3(1e3); 
 //H_Min_Esfera = p_Min_Esfera.z
-float h_Plano = -200.0, r_Esfera = 100.0;
+float h_O_Plano = -200.0, h_Plano = 0.0, r_Esfera = 100.0;
 int f_Actual = 0;
 
 float d_Esfera(vec3 p, float r) { 
@@ -22,18 +24,27 @@ float d_Plano( vec3 p, vec3 n, float h ) {
     return dot(p,-n) - h;
 }
 
+void act_Frametime() {
+    /*
+    estas variables son ctes durante frameTime
+    actualiza solo UNA vez x frametime
+    */
+    h_Plano = h_O_Plano; 
+    
+    h_Plano *= sin(iTime); //movto SIEMPRE en f(t).
+    //NO valen operadores de asignacion compuesta que no esten en f de 
+    //iTime! x la volatilidad/efimeridad de los datos
+    
+    f_Actual = iFrame;
+}
+
 /*
 actualizo posicion cada frame en f de tiempo. 
 iTimeDelta (f) = Tiempo/frame, 16ms/frame
 iFrameRate(t)
 */
 float d_Supcie(vec3 p) {
-    if (f_Actual != iFrame) {
-        h_Plano *= sin(iTime); //NO valen operadores de 
-        //asignacion compuesta que no esten en f de iTime!
-                
-        f_Actual = iFrame;
-    }
+    if (f_Actual != iFrame) act_Frametime();
     
     /*
     if (int(iTime) != t_Actual) { //iFrame
@@ -43,8 +54,6 @@ float d_Supcie(vec3 p) {
     }
     */ 
     
-    //h_Plano *= sin(iTime);
-
     return min(d_Esfera(p, r_Esfera),d_Plano(p, z, h_Plano)); 
 }
 
