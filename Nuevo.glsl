@@ -143,25 +143,22 @@ float d_Supcie(vec3 p) {
         //v1 = g/2.0*t; //t
         //AHORA SÍ esta actualizado                
         //calculo
-        float h_Plano1 = h_Plano + v1*iTime;
+        h_Plano += v1*iTime;
         //h_Plano += v1*t;        
         //fuerzo a q plano y esfera esten en cto        
         //cond = float(r_Esfera-h_Plano1 > 2.0*r_Esfera); //NO funca bien       
-        if (r_Esfera-h_Plano1 > 2.0*r_Esfera) { //p_Min_Esfera.z                     
-            if (v1 > v_Term) v1 = v_Term; 
-            
-            h_Plano1 = h_Plano + v1*iTime;
-            //t = iTime; //NO persiste!!!!           
-        
-        } else if (v1 > 0.0) {
-            h_Plano1 = -r_Esfera; 
+        //p_Min_Esfera.z                                                             
+        if (r_Esfera-h_Plano < 2.0*r_Esfera) { //v1 > 0.0) {
+            h_Plano = -r_Esfera; 
             v1 = 0.0;
-        }
+        }        
+        
+        if (v1 > v_Term) v1 = v_Term;
         
         cond = v1;
         //h_Plano1 = h_Plano + iTime; //v1 = 0.0; //NO funca      
         //v1 = g/2.0*t;
-        h_Plano = h_Plano1; // + v1*t; //asigno NO +=!!
+        //h_Plano = h_Plano1; // + v1*t; //asigno NO +=!!
 
         /*
         movto SIEMPRE en f(t).
