@@ -29,10 +29,14 @@ void act_Frametime() {
     estas variables son ctes durante frameTime
     actualiza solo UNA vez x frametime
     */
-    float g = 9.8;
+    float g = 9.8, v_Term = 55.0;
     h_Plano = h_O_Plano; 
     
-    h_Plano += g*iTime*iTime;
+    float v = g/2.0*iTime;
+    if (v > v_Term) v = v_Term;
+    
+    h_Plano += v*iTime;
+    
     /*
     movto SIEMPRE en f(t).
     NO valen operadores de asignacion compuesta que no esten en f de 
