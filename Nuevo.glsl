@@ -123,7 +123,9 @@ actualizo posicion cada frame en f de tiempo.
 iTimeDelta (f) = Tiempo/frame, 16ms/frame
 iFrameRate(t)
 */
-float v1 = 0.0;
+float v1 = 0.0, v_Term = 55.0;
+
+float cond = 0.0;
 
 float d_Supcie(vec3 p) {
     if (f_Actual != iFrame) { 
@@ -131,17 +133,29 @@ float d_Supcie(vec3 p) {
         estas variables son ctes durante frameTime
         actualiza solo UNA vez x frametime
         */
-        float g = 9.8, v_Term = 55.0/*, v = 0.0*/; //v(11) = v_Term
+        float g = 9.8; //, v_Term = 55.0, v = 0.0; //v(11) = v_Term
 
         //v != v_Term
         //float - vec3!!, 300>200
-        if (r_Esfera-h_Plano > 2.0*r_Esfera) { //p_Min_Esfera.z
-            if (v1 < v_Term) v1 = g/2.0*iTime; 
-            else if (v1 > v_Term) v1 = v_Term; //NO funca
 
-        } else if (v1 > 0.0) v1 = 0.0; //NO funca
-
-        h_Plano += v1*iTime;
+        //AQUÍ v1 NO esta actualizado
+        //hay q calcularlo para cada frameTime
+        //NO es persistente
+        v1 = g/2.0*iTime; //t
+        //AHORA SÍ esta actualizado
+                
+        //calculo
+        float h_Plano1 = h_Plano + v1*iTime;
+               
+        if (r_Esfera-h_Plano1 > 2.0*r_Esfera) { //p_Min_Esfera.z 
+            cond = v1; //NO funca bien
+            if (v1 > v_Term) v1 = v_Term; 
+            
+            h_Plano1 = h_Plano + v1*iTime;
+            
+        } else if (v1 > 0.0) h_Plano1 = h_Plano + iTime; //v1 = 0.0; //NO funca
+       
+        h_Plano = h_Plano1; //asigno
 
         /*
         movto SIEMPRE en f(t).
@@ -208,8 +222,9 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
             //bottom left of text
             vec2 position = vec2(0.0);
             
-            col += draw_float(position, 
-                float(r_Esfera-h_Plano > 2.0*r_Esfera));
+            //aqui las cosas SÍ  funcan. Arriba NO
+            //float cond = v1; //float(v1 > v_Term); //v1 < v_Term); //r_Esfera-h_Plano > 2.0*r_Esfera)
+            col += draw_float(position, cond);
 
             position.y += DIGIT_HEIGHT;            
         
