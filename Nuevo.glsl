@@ -12,7 +12,7 @@ Ojo a que sean constantes
 */
 vec3 z = vec3(0, 0, 1), p_Min_Esfera = vec3(1e3); 
 //H_Min_Esfera = p_Min_Esfera.z
-float h_O_Plano = -200.0, h_Plano = 0.0, r_Esfera = 100.0;
+float h_Plano = -200.0, r_Esfera = 100.0;
 int f_Actual = 0;
 
 float d_Esfera(vec3 p, float r) { 
@@ -29,14 +29,14 @@ void act_Frametime() {
     estas variables son ctes durante frameTime
     actualiza solo UNA vez x frametime
     */
-    float g = 9.8, v_Term = 55.0;
-    h_Plano = h_O_Plano; 
+    float g = 9.8, v_Term = 55.0, v = 0.0; //, v = g/2.0*iTime; //v(11) = v_Term
+        
+    if (v < v_Term) v = g/2.0*iTime;
     
-    float v = g/2.0*iTime;
-    if (v > v_Term) v = v_Term;
+    else if (v > v_Term) v = v_Term; //UNA vez
     
     h_Plano += v*iTime;
-    
+        
     /*
     movto SIEMPRE en f(t).
     NO valen operadores de asignacion compuesta que no esten en f de 
@@ -53,15 +53,7 @@ iFrameRate(t)
 */
 float d_Supcie(vec3 p) {
     if (f_Actual != iFrame) act_Frametime();
-    
-    /*
-    if (int(iTime) != t_Actual) { //iFrame
-        h_Plano += 10.0; //NO funciona
         
-        t_Actual = int(iTime);
-    }
-    */ 
-    
     return min(d_Esfera(p, r_Esfera),d_Plano(p, z, h_Plano)); 
 }
 
