@@ -1,3 +1,98 @@
+///////////// debug //////////////
+// This code is released into the public domain.
+// If you need a license instead, consider this CC0, MIT or BSD licensed, take your pick.
+// Remember to set iChannel3 to the font texture
+// If you want to print digits larger than 99999, increase MAX_DIGITS
+
+#define MAX_DIGITS    5
+#define BASE         10
+#define DIGIT_WIDTH  20.0
+#define DIGIT_HEIGHT 20.0
+
+#define PLUS_SIGN  vec2(11.0, 13.0)
+#define MINUS_SIGN vec2(13.0, 13.0)
+#define DOT        vec2(14.0, 13.0)
+
+int idiv(int a, int b){
+    // If you encounter precision loss, this is probably the reason.
+    return int(float(a)/float(b));
+}
+
+int imod(int a, int b){
+    return a - idiv(a, b)*b;
+}
+
+// draw a character where p is bottom left
+float draw_char(vec2 p, vec2 char_position){
+    vec2 uv = (gl_FragCoord.xy - p)/vec2(DIGIT_WIDTH, DIGIT_HEIGHT);
+    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0){
+        return texture(iChannel3, (uv + char_position)/16.0).r;
+    }
+    return 0.0;
+}
+
+// draw a digit between 0-9
+float draw_digit(vec2 p, int digit){
+    return draw_char(p, vec2(float(digit), 12.0));
+}
+
+// draw an unsigned integer
+float draw_uint(vec2 p, int number){
+    number = abs(number);
+    
+    // we draw numbers from right to left because we get digits in that order
+    p.x += float(MAX_DIGITS - 1)*DIGIT_WIDTH;
+    
+    float color = 0.0;
+    
+    // decompose number into digits
+    for (int i = 0; i < MAX_DIGITS; i++){
+        int digit = imod(number, BASE);
+        number = idiv(number, BASE);
+        
+        color += draw_digit(p, digit);
+        
+        p.x -= DIGIT_WIDTH;
+    }
+    
+    return color;
+}
+
+// draw an unsigned integer with a sign in front
+float draw_uint_with_sign(vec2 p, int number, bool negative){
+    // draw sign
+    float color = draw_char(p, negative ? MINUS_SIGN : PLUS_SIGN);
+    p.x += DIGIT_WIDTH;
+    
+    // draw uint
+    color += draw_uint(p, number);
+    
+    return color;
+}
+
+float draw_int(vec2 p, int number){
+    return draw_uint_with_sign(p, number, number < 0);
+}
+
+float draw_float(vec2 p, float f){
+    float color = draw_uint_with_sign(p, int(f), f < 0.0);
+    p.x += float(MAX_DIGITS + 1)*DIGIT_WIDTH;
+    
+    // draw dot
+    color += draw_char(p, DOT);
+    p.x += DIGIT_WIDTH;
+    
+    // remove integer part
+    f -= float(int(f));
+    // shift fractional part into integer part
+    f *= pow(float(BASE), float(MAX_DIGITS));
+    
+    // draw fractional part
+    color += draw_uint(p, int(f));
+    
+    return color;
+}
+/////////////// debug ///////////////
 /*
 Output: vec4 fragColor
 Input: vec2 fragCoord
@@ -39,11 +134,11 @@ float d_Supcie(vec3 p) {
 
         //v != v_Term
         //float - vec3!!
-        if (/*p_Min_Esfera.z*/-r_Esfera-h_Plano > 0.0) { 
+        //if (/*p_Min_Esfera.z*/-r_Esfera-h_Plano > 0.0) { 
             if (v < v_Term) v = g/2.0*iTime; 
             else if (v > v_Term) v = v_Term; 
 
-        } else if (v > 0.0) v = 0.0; //NO funca
+        //} else if (v > 0.0) v = 0.0; //NO funca
 
         h_Plano += v*iTime;
 
@@ -104,7 +199,23 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
     analogia p = vt en r3
     // Time varying pixel color
     vec3 col = 0.5 + 0.5*cos(iTime+uv.xyx+vec3(0,2,4));
-    */
+    */   
+    //////////////// debug //////////////////
+    float color = 0.0;
     
-    fragColor = vec4(col,1.0);
+    // bottom left of text
+    vec2 position = vec2(0.0);
+    
+    color += draw_float(position, iTime);
+    
+    position.y += DIGIT_HEIGHT;
+    
+    color += draw_float(position, 3.14); //print pi
+    
+    position.y += DIGIT_HEIGHT;
+    
+    color += draw_int(position, -12345);
+    ////////// debug //////////////
+        
+    fragColor = vec4(col, 1.0) + vec4(color);
 }
