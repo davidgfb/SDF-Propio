@@ -3,15 +3,10 @@
 // If you need a license instead, consider this CC0, MIT or BSD licensed, take your pick.
 // Remember to set iChannel3 to the font texture
 // If you want to print digits larger than 99999, increase MAX_DIGITS
-
-#define MAX_DIGITS    5
-#define BASE         10
-#define DIGIT_WIDTH  20.0
-#define DIGIT_HEIGHT 20.0
-
-#define PLUS_SIGN  vec2(11.0, 13.0)
-#define MINUS_SIGN vec2(13.0, 13.0)
-#define DOT        vec2(14.0, 13.0)
+int MAX_DIGITS = 5, BASE = 10;
+float DIGIT_WIDTH = 20.0, DIGIT_HEIGHT = 20.0;
+vec2 PLUS_SIGN = vec2(11.0, 13.0), MINUS_SIGN = vec2(13.0, 13.0),
+    DOT = vec2(14.0, 13.0);
 
 int idiv(int a, int b){
     // If you encounter precision loss, this is probably the reason.
@@ -25,10 +20,12 @@ int imod(int a, int b){
 // draw a character where p is bottom left
 float draw_char(vec2 p, vec2 char_position){
     vec2 uv = (gl_FragCoord.xy - p)/vec2(DIGIT_WIDTH, DIGIT_HEIGHT);
-    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0){
-        return texture(iChannel3, (uv + char_position)/16.0).r;
-    }
-    return 0.0;
+    float res = 0.0;
+        
+    if (uv.x >= 0.0 && uv.x <= 1.0 && uv.y >= 0.0 && uv.y <= 1.0)
+        res = texture(iChannel3, (uv + char_position)/16.0).r;
+        
+    return res;
 }
 
 // draw a digit between 0-9
@@ -160,6 +157,17 @@ float get_H() {
 }
 */
 
+struct F {
+    float c, y;
+};
+
+F draw_float(float color, vec2 pos, float n, float D_H) {
+    color += draw_float(pos, n);
+    pos.y += D_H;
+    
+    return F(color, pos.y); 
+}
+
 void mainImage( out vec4 fragColor, vec2 fragCoord ) {
     /*
     falta añadir el origen de la cam detras del plano fragcoord
@@ -206,14 +214,14 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
     // bottom left of text
     vec2 position = vec2(0.0);
     
-    color += draw_float(position, iTime);
+    F f = draw_float(color, position, iTime, DIGIT_HEIGHT);
+    color = f.c;
+    position.y = f.y;
     
-    position.y += DIGIT_HEIGHT;
-    
-    color += draw_float(position, 3.14); //print pi
-    
-    position.y += DIGIT_HEIGHT;
-    
+    f = draw_float(color, position, 3.14, DIGIT_HEIGHT);
+    color = f.c;
+    position.y = f.y;
+        
     color += draw_int(position, -12345);
     ////////// debug //////////////
         
