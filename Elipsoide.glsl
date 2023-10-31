@@ -17,16 +17,16 @@ void mainImage( out vec4 fragColor, vec2 fragCoord ) {
     fragCoord *= 1e3 / iResolution.x;
 
     vec3 col = vec3(0), x = z.zxx, y = z.xzx,  
-        o = vec3(fragCoord.x, 0, -fragCoord.y) - 500.0*x + 300.0*z,
+        o = vec3(fragCoord.x, 0, -fragCoord.y) - 100.0*vec3(5,0,-3),
         p = o, v = y; //v direccion, p.y no importa pues la persp
         //es ortogonal. tiene q ser opuesto
-    float f_D_Supcie = d_Elipsoide(p, 50.0*vec3(1, 2, 3)), 
+    float f_D_Supcie = d_Elipsoide(p, vec3(1, 2, 3)/10.0), 
         d_Max = 1e0;
         
     for (p; length(p-o) < d_Max;) { //while  
         p += v*f_D_Supcie;
         
-        if (f_D_Supcie < 1e-5) col = normalize(col-p);                        
+        if (f_D_Supcie < 50.0) col = 5.0/f_D_Supcie*vec3(1); 
     }
        
     // Normalized pixel coordinates (from 0 to 1)
