@@ -139,7 +139,7 @@ float d_Supcie(vec3 p) {
         //hay q calcularlo para cada frameTime
         //NO es persistente
         //float t = 0.0; //si no actualizo t -> 0
-        v1 = g/2.0*iTime;
+        v1 = g*iTime;
         //v1 = g/2.0*t; //t
         //AHORA SÍ esta actualizado                
         //calculo
