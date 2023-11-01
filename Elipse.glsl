@@ -1,17 +1,17 @@
 /* See https://iquilezles.org/articles/ellipses
 Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
-Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw*/
+Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
 struct bound3 {
     vec3[2] ms; // mMin, mMax;
 };
-
-/*---------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
  bounding box for a ellipse (https://iquilezles.org/articles/ellipses)
----------------------------------------------------------------------------------------*/
-bound3 EllipseAABB( vec3 c, vec3 u, vec3 v ) { // disk: center, 1st axis, 2nd axis
+---------------------------------------------------------------------------------------
+*/
+vec3[2] EllipseAABB( vec3 c, vec3 u, vec3 v ) { // disk: center, 1st axis, 2nd axis
     vec3 e = sqrt( u*u + v*v ); //NO es float length(u+v)
     
-    return bound3( vec3[](c-e, c+e ));
+    return vec3[](c-e, c+e );
 }
 
 // ray-ellipse intersection
