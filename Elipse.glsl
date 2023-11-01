@@ -7,14 +7,13 @@ struct bound3 {
 ---------------------------------------------------------------------------------------
  bounding box for a ellipse (https://iquilezles.org/articles/ellipses)
 ---------------------------------------------------------------------------------------
-*/
 vec3[2] EllipseAABB( vec3 c, vec3 u, vec3 v ) { // disk: center, 1st axis, 2nd axis
     vec3 e = sqrt( u*u + v*v ); //NO es float length(u+v)
     
     return vec3[](c-e, c+e );
 }
-
 // ray-ellipse intersection
+*/
 float d_Elipse( vec3 ro, vec3 rd, vec3[3] elipse_Cuv ) {
     /*
     vec3 c = vec3(0),u = vec3(0),v = vec3(0);
@@ -73,7 +72,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
                                                                             
             // raytrace elipse, //center;
             if( d_Elipse( ro, rd, vec3[](vec3(0), vec3(0.3),
-                                   vec3(0,0,0.3) )>0.0 ) 
+                                   vec3(0,0,0.3)))>0.0 ) 
                 col = vec3(10,30.0/4.0,3)/10.0*(0.7+abs(elipse_axis.y)/5.0);
             
             tot += col;    
