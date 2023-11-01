@@ -1,5 +1,4 @@
 /* See https://iquilezles.org/articles/ellipses
-Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
 Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
 ---------------------------------------------------------------------------------------
  bounding box for a ellipse (https://iquilezles.org/articles/ellipses)
@@ -19,6 +18,10 @@ float d_Elipse( vec3[5] elipse_Cuv ) {
 
 float hash1( in vec2 p ) {
     return fract(sin(dot(p, vec2(13.0, 78.23)))*43758.55);
+}
+
+float d_Supcie(float[2] supcies) {
+    return min(supcies[0], supcies[1]);
 }
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
@@ -42,10 +45,16 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
                  // render
                  col = vec3(2)/5.0*(1.0-0.3*length(p)), 
                  elipse_axis = vec3(1);
-                                                                            
+                   
+            float[] ds_Supcies = float[](d_Elipse(vec3[] (ro, rd, vec3(0),
+                                                          vec3(0.3), 
+                                                          vec3(0,0,0.3))),
+                                         d_Elipse(vec3[] (ro, rd, vec3(0),
+                                                          vec3(0.3),
+                                                          vec3(0,0.3,0.3))));       
+                   
             // raytrace elipse, //center;
-            if( d_Elipse( vec3[] (ro, rd, vec3(0), vec3(0.3),
-                          vec3(0,0,0.3)))>0.0 ) 
+            if( d_Supcie(ds_Supcies)>0.0 ) 
                 col = vec3(10,30.0/4.0,3)/10.0*(0.7+abs(elipse_axis.y)/5.0);
             
             tot += col;    
