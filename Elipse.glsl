@@ -6,12 +6,13 @@ Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
 ---------------------------------------------------------------------------------------
 ray-ellipse intersection
 */
-float d_Elipse( vec3 ro, vec3 rd, vec3[3] elipse_Cuv ) {
+float d_Elipse( vec3[5] elipse_Cuv ) {
     /*ray: origin, direction
     disk: center, 1st axis, 2nd axis*/ 
-    vec3 c = elipse_Cuv[0], u = elipse_Cuv[1], v = elipse_Cuv[2],
-         q = ro - c, u_X_V = cross(u,v), r = vec3(dot( u_X_V, q ),
-		 dot( cross(q,u), rd ), dot( cross(v,q), rd ))/dot( -u_X_V, rd );
+    vec3 ro = elipse_Cuv[0], rd = elipse_Cuv[1], c = elipse_Cuv[2], 
+         u = elipse_Cuv[3], v = elipse_Cuv[4], q = ro - c, 
+         u_X_V = cross(u,v), r = vec3(dot(u_X_V, q),dot(cross(q,u), rd), 
+                                 dot( cross(v,q), rd ))/dot( -u_X_V, rd);
     
     return (dot(r.yz,r.yz)<1.0) ? r.x : -1.0;
 }
@@ -43,7 +44,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
                  elipse_axis = vec3(1);
                                                                             
             // raytrace elipse, //center;
-            if( d_Elipse( ro, rd, vec3[](vec3(0), vec3(0.3),
+            if( d_Elipse( vec3[] (ro, rd, vec3(0), vec3(0.3),
                           vec3(0,0,0.3)))>0.0 ) 
                 col = vec3(10,30.0/4.0,3)/10.0*(0.7+abs(elipse_axis.y)/5.0);
             
