@@ -1,14 +1,8 @@
-// The MIT License
-// Copyright © 2017 Inigo Quilez
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-// See https://iquilezles.org/articles/ellipses
-// Analytical computation of the exact bounding box for an arbitrarily oriented 3D elipse. 
-// Derivation and more info in the link above
-// Similar shaders:
-// Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
-// Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
+/* See https://iquilezles.org/articles/ellipses
+Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
+Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw*/
 struct bound3 {
-    vec3 mMin, mMax;
+    vec3[2] ms; // mMin, mMax;
 };
 
 /*---------------------------------------------------------------------------------------
@@ -17,7 +11,7 @@ struct bound3 {
 bound3 EllipseAABB( vec3 c, vec3 u, vec3 v ) { // disk: center, 1st axis, 2nd axis
     vec3 e = sqrt( u*u + v*v ); //NO es float length(u+v)
     
-    return bound3( c-e, c+e );
+    return bound3( vec3[](c-e, c+e ));
 }
 
 // ray-ellipse intersection
@@ -41,6 +35,7 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     
     for( int m=0; m<AA; m++ ) {
         for( int n=0; n<AA; n++ ) {
+            //float t = 0.0;
             // pixel coordinates
             vec2 o = vec2(float(m),float(n)) / float(AA) - 0.5,
                  p = (2.0*(fragCoord+o) -iResolution.xy)/iResolution.y;
@@ -52,37 +47,22 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
                  uu = normalize( cross(ww,Y ) ), 
                  vv = p.y*normalize( cross(uu,ww)),
                  rd = normalize( p.x*uu + vv + 1.5*ww ), //NO es float dot(vec3(p.xy, 1.5),vec3(uu,vv,ww))
-                 // create view ray
-                 // disk animation
-                 disk_center = 0.3*sin(iTime*vec3(111,127,147)/100.0+
-                               vec3(2,5,6)),
-                 disk_axis = normalize( sin(iTime*vec3(123,141,107)/100.0+
-                             vec3(0,1,3)) ),
-                 disk_u = 0.3*sin(iTime*vec3(13,11,12)/10.0+vec3(1,0,4)/2.0),
-                 disk_v = 0.3*sin(iTime*vec3(10,12,11)/10.0+vec3(4,2,1)),
+                 /*create view ray                 
+                 disk animation*/
+                 disk_center = vec3(0), /*0.3*sin(t*vec3(111,127,147)/100.0+
+                               0.3*vec3(2,5,6)),*/
+                 disk_axis = vec3(1), /*normalize( sin(t*vec3(123,141,107)/100.0+
+                             vec3(0,1,3)) ),*/
+                 disk_u = vec3(0.3), //0.3*sin(t*vec3(13,11,12)/10.0+vec3(1,0,4)/2.0),
+                 disk_v = vec3(0,0,0.3), //0.3*sin(t*vec3(10,12,11)/10.0+vec3(4,2,1)),
+                 
                  // render
                  col = vec3(2)/5.0*(1.0-0.3*length(p));
 
             // raytrace disk
-            float t = d_Elipse( ro, rd, disk_center, disk_u, disk_v ),
-                  tmin = 1e10;
-
-            if( t>0.0 ) {        
-                tmin = t;
+            if( d_Elipse( ro, rd, disk_center, disk_u, disk_v )>0.0 ) 
                 col = vec3(10,30.0/4.0,3)/10.0*(0.7+abs(disk_axis.y)/5.0);
-            }
-
-            // compute bounding box for disk
-            bound3 bbox = EllipseAABB( disk_center, disk_u, disk_v );
-
-            bbox.mMin/=2.0;
-            bbox.mMax/=2.0;
-
-            // raytrace bounding box
-            vec3 bcen = bbox.mMin+bbox.mMax,
-                 brad = bbox.mMax-bbox.mMin;	
-            // no gamma required here, it's done in line 118
-
+            
             tot += col;    
         }
     }
