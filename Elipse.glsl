@@ -7,8 +7,6 @@
 // Similar shaders:
 // Cylinder         - 3D BBox : https://www.shadertoy.com/view/MtcXRf
 // Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
-#define AA 3
-
 struct bound3 {
     vec3 mMin, mMax;
 };
@@ -39,61 +37,57 @@ float hash1( in vec2 p ) {
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec3 tot = vec3(0);
+    int AA = 3;
     
-    #if AA>1
-        for( int m=0; m<AA; m++ ) 
-            for( int n=0; n<AA; n++ ) {
-                // pixel coordinates
-                vec2 o = vec2(float(m),float(n)) / float(AA) - 0.5,
-                     p = (2.0*(fragCoord+o) -iResolution.xy)/iResolution.y;
-    #else    
-                vec2 p = (2.0*fragCoord -iResolution.xy)/iResolution.y;
-    #endif
-                // camera position
-                vec3 Y = vec3(0,1,0), ro = vec3(-5, 4, 15)/10.0, ta = vec3( 0 ),
-                     // camera matrix
-                     ww = normalize( ta - ro ), 
-                     uu = normalize( cross(ww,Y ) ), 
-                     vv = normalize( cross(uu,ww)),
-                     rd = normalize( p.x*uu + p.y*vv + 1.5*ww ), 
-                     // create view ray
-                     // disk animation
-                     disk_center = 0.3*sin(iTime*vec3(111,127,147)/100.0+
-                                   vec3(2,5,6)),
-                     disk_axis = normalize( sin(iTime*vec3(123,141,107)/100.0+
-                                 vec3(0,1,3)) ),
-                     disk_u = 0.3*sin(iTime*vec3(13,11,12)/10.0+vec3(1,0,4)/2.0),
-                     disk_v = 0.3*sin(iTime*vec3(10,12,11)/10.0+vec3(4,2,1)),
-                     // render
-                     col = vec3(4)/10.0*(1.0-0.3*length(p));
+    for( int m=0; m<AA; m++ ) {
+        for( int n=0; n<AA; n++ ) {
+            // pixel coordinates
+            vec2 o = vec2(float(m),float(n)) / float(AA) - 0.5,
+                 p = (2.0*(fragCoord+o) -iResolution.xy)/iResolution.y;
+            //vec2 p = (2.0*fragCoord -iResolution.xy)/iResolution.y;
+            // camera position
+            vec3 Y = vec3(0,1,0), ro = vec3(-5, 4, 15)/10.0, ta = vec3( 0 ),
+                 // camera matrix
+                 ww = normalize( ta - ro ), 
+                 uu = normalize( cross(ww,Y ) ), 
+                 vv = p.y*normalize( cross(uu,ww)),
+                 rd = normalize( p.x*uu + vv + 1.5*ww ), //NO es float dot(vec3(p.xy, 1.5),vec3(uu,vv,ww))
+                 // create view ray
+                 // disk animation
+                 disk_center = 0.3*sin(iTime*vec3(111,127,147)/100.0+
+                               vec3(2,5,6)),
+                 disk_axis = normalize( sin(iTime*vec3(123,141,107)/100.0+
+                             vec3(0,1,3)) ),
+                 disk_u = 0.3*sin(iTime*vec3(13,11,12)/10.0+vec3(1,0,4)/2.0),
+                 disk_v = 0.3*sin(iTime*vec3(10,12,11)/10.0+vec3(4,2,1)),
+                 // render
+                 col = vec3(2)/5.0*(1.0-0.3*length(p));
 
-                // raytrace disk
-                float t = d_Elipse( ro, rd, disk_center, disk_u, disk_v ),
-                      tmin = 1e10;
+            // raytrace disk
+            float t = d_Elipse( ro, rd, disk_center, disk_u, disk_v ),
+                  tmin = 1e10;
 
-                if( t>0.0 ) {        
-                    tmin = t;
-                    col = vec3(10,30.0/4.0,3)/10.0*(0.7+abs(disk_axis.y)/5.0);
-                }
+            if( t>0.0 ) {        
+                tmin = t;
+                col = vec3(10,30.0/4.0,3)/10.0*(0.7+abs(disk_axis.y)/5.0);
+            }
 
-                // compute bounding box for disk
-                bound3 bbox = EllipseAABB( disk_center, disk_u, disk_v );
+            // compute bounding box for disk
+            bound3 bbox = EllipseAABB( disk_center, disk_u, disk_v );
 
-                // raytrace bounding box
-                vec3 bcen = (bbox.mMin+bbox.mMax)/2.0,
-                     brad = (bbox.mMax-bbox.mMin)/2.0;	
-                // no gamma required here, it's done in line 118
+            bbox.mMin/=2.0;
+            bbox.mMax/=2.0;
 
-                tot += col;
-    
-    #if AA>1
+            // raytrace bounding box
+            vec3 bcen = bbox.mMin+bbox.mMax,
+                 brad = bbox.mMax-bbox.mMin;	
+            // no gamma required here, it's done in line 118
+
+            tot += col;    
         }
-
-        tot /= float(AA*AA);
-    #endif
-
+    }
+    
     // dithering
-    tot += ((hash1(fragCoord.xy)+hash1(fragCoord.yx+13.1))-1.0)/512.0;
-
-	fragColor = vec4( tot, 1.0 );
+	fragColor = vec4( tot/float(AA*AA) + ((hash1(fragCoord.xy)+
+                      hash1(fragCoord.yx+13.1))-1.0)/512.0, 1.0 );
 }
