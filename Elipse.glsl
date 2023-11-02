@@ -5,24 +5,21 @@ Ellipse          - 3D BBox : https://www.shadertoy.com/view/Xtjczw
 ---------------------------------------------------------------------------------------
 ray-ellipse intersection
 */
-float d_Elipse( vec3[5] elipse_Cuv ) {
+float d_Elipse( vec3[5] params ) {
     /*ray: origin, direction
     disk: center, 1st axis, 2nd axis*/ 
-    vec3 ro = elipse_Cuv[0], rd = elipse_Cuv[1], c = elipse_Cuv[2], 
-         u = elipse_Cuv[3], v = elipse_Cuv[4], q = ro - c, 
+    vec3 ro = params[0], rd = params[1], c = params[2], 
+         u = params[3], v = params[4], q = ro - c, 
          u_X_V = cross(u,v), r = vec3(dot(u_X_V, q),dot(cross(q,u), rd), 
                                  dot( cross(v,q), rd ))/dot( -u_X_V, rd);
     
     return (dot(r.yz,r.yz)<1.0) ? r.x : -1.0;
 }
 
-float hash1( in vec2 p ) {
-    return fract(sin(dot(p, vec2(13.0, 78.23)))*43758.55);
-}
-
+/*
 float d_Supcie(float[2] supcies) {
     return min(supcies[0], supcies[1]);
-}
+}*/
 
 void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
     vec3 tot = vec3(0);
@@ -51,17 +48,21 @@ void mainImage( out vec4 fragColor, in vec2 fragCoord ) {
                                                           vec3(0,0,0.3))),
                                          d_Elipse(vec3[] (ro, rd, vec3(0),
                                                           vec3(0.3),
-                                                          vec3(0,0.3,0.3))));       
+                                                          vec3(0.3,0,0.3))));       
+            
+            //vec3[] cs_Elipses = vec3[](vec3(1,0,0), vec3(0,1,0));
+            
+            float d_Supcie = 0.0;            
+            for (int i = 0; i+1<ds_Supcies.length(); i++) 
+                d_Supcie = -min(ds_Supcies[i], ds_Supcies[i+1]);
                    
             // raytrace elipse, //center;
-            if( d_Supcie(ds_Supcies)>0.0 ) 
-                col = vec3(10,30.0/4.0,3)/10.0*(0.7+abs(elipse_axis.y)/5.0);
+            if( d_Supcie<0.0 ) 
+                col = vec3(1); //vec3(10,30.0/4.0,3)/10.0*(0.7+abs(elipse_axis.y)/5.0);
             
             tot += col;    
         }
     }
     
-    // dithering
-	fragColor = vec4( tot/float(AA*AA) + ((hash1(fragCoord.xy)+
-                      hash1(fragCoord.yx+13.1))-1.0)/512.0, 1.0 );
+	fragColor = vec4( tot/float(AA*AA), 1.0 );
 }
